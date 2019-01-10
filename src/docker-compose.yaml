@@ -1,0 +1,24 @@
+version: '3'
+services:
+  db:
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_PASSWORD: examplepwd
+      POSTGRES_USER: exampleusr
+      POSTGRES_DB: todo
+  myappspa:
+    build: ./myappspa
+    image: myappspa:1 
+    ports: 
+      - "8080:80"
+    environment: 
+      TODOAPIURL: "http://localhost:8081"
+  myapptodo:
+    build: ./myapptodo
+    image: myapptodo:1 
+    depends_on:
+       - db
+    ports: 
+      - "8081:8080"
+    environment: 
+      POSTGRESQL_URL: "jdbc:postgresql://db:5432/todo?user=exampleusr&password=examplepwd"
