@@ -14,4 +14,6 @@ sed -i -e "s/#TODOAPIURL#/${TODOAPIURL/'//'/'\/\/'}/" /var/www/js/app.js
 sed -i -e "s/#INSTANCENAME#/$(cat /etc/hostname)/" /var/www/js/app.js 
 sed -i -e "s/#INSTANCEVERSION#/$(cat /version)/" /var/www/js/app.js 
 
+echo "$(cat /etc/hostname) - $(cat /version)" > /var/www/info.txt
+
 nginx
