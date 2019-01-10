@@ -3,7 +3,7 @@
 ## prepare environment
 
 We will use shell.azure.com cloud shell (bash) for experiments.
-Before you will start please create FORK of our repo git@github.com:azurecz/java-k8s-workshop.git 
+Before you will start please create FORK of our repo `git@github.com:azurecz/java-k8s-workshop.git`
 
 ```bash
 mkdir myexperiment
