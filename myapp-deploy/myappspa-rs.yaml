@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: myappspa
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: myappspa
+    spec:
+      containers:
+        - name: myappspa
+          image: valdaakssec001.azurecr.io/myappspa:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
