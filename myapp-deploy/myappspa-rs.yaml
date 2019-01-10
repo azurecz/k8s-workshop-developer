@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: myappspa
-          image: valdaakssec001.azurecr.io/myappspa:v1
+          image: XXXXXXXXXX.azurecr.io/myappspa:v1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80

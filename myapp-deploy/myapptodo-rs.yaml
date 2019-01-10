@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: myapptodo
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: myapptodo
+    spec:
+      containers:
+        - name: myapptodo
+          image: XXXXXXXXXX.azurecr.io/myapptodo:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          resources:
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 250m
+              memory: 256Mi
+          env:
+            - name: POSTGRESQL_URL
+              valueFrom:
+                secretKeyRef:
+                  name: myapptodo-secret
+                  key: postgresqlurl

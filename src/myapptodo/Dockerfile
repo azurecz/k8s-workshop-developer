@@ -36,7 +36,7 @@ FROM base as final
 WORKDIR $APP_HOME
 COPY --from=build /usr/src/app/target/app.jar .
 # certificate for postgres
-# RUN mkdir /root/.postgresql
-# COPY src/main/postgresql/root.crt /root/.postgresql/
+RUN mkdir /root/.postgresql
+COPY src/main/postgresql/root.crt /root/.postgresql/
 # run it ...
 ENTRYPOINT [ "java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar" ]
