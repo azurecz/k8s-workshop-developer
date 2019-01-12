@@ -1,5 +1,5 @@
 #!/bin/bash
-cat >/etc/motd <<EOL 
+cat <<EOL 
   _____                               
   /  _  \ __________ _________   ____  
  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
@@ -8,12 +8,11 @@ cat >/etc/motd <<EOL
         \/      \/                  \/ 
 EOL
 
-cat /etc/motd
+sed -i -e "s/#TODOAPIURL#/${TODOAPIURL/'//'/'\/\/'}/" /opt/bitnami/nginx/html/js/app.js 
+sed -i -e "s/#INSTANCENAME#/$(cat /etc/hostname)/" /opt/bitnami/nginx/html/js/app.js 
+sed -i -e "s/#INSTANCEVERSION#/$(cat /version)/" /opt/bitnami/nginx/html/js/app.js 
 
-sed -i -e "s/#TODOAPIURL#/${TODOAPIURL/'//'/'\/\/'}/" /var/www/js/app.js 
-sed -i -e "s/#INSTANCENAME#/$(cat /etc/hostname)/" /var/www/js/app.js 
-sed -i -e "s/#INSTANCEVERSION#/$(cat /version)/" /var/www/js/app.js 
+echo "$(cat /etc/hostname) - $(cat /version)" > /opt/bitnami/nginx/html/info.txt
 
-echo "$(cat /etc/hostname) - $(cat /version)" > /var/www/info.txt
-
-nginx
+/bin/bash /setup.sh
+/bin/bash /run.sh
