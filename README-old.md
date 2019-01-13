@@ -1,5 +1,7 @@
 # java-k8s-workshop
 
+* WORK IN PROGRESS *
+
 ## prepare environment
 
 We will use shell.azure.com cloud shell (bash) for experiments.

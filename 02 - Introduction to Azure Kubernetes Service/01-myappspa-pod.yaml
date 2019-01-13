@@ -1,0 +1,15 @@
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: spa
+spec:
+  containers:
+    - name: myappspa
+      image: tomasacrdemo.azurecr.io/myappspa:v1   # Best practice - always define specific tag, do not rely on latest
+      imagePullPolicy: Always    # Best practice for security - user will no access to image might get it from local cache
+      env:
+      - name: NGINX_HTTP_PORT_NUMBER
+        value: "8080"
+      ports:  # We cannot run on ports <1024 because that would require root
+      - containerPort: 8080
