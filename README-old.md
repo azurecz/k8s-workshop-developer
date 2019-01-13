@@ -1,6 +1,6 @@
 # java-k8s-workshop
 
-* WORK IN PROGRESS *
+**WORK IN PROGRESS**
 
 ## prepare environment
 
