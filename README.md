@@ -63,6 +63,19 @@ kubectl create clusterrolebinding kubernetes-dashboard \
   --serviceaccount=kube-system:kubernetes-dashboard
 ```
 
+## Setup access for AKS to ACR
+
+```bash
+# Get the id of the service principal configured for AKS
+CLIENT_ID=$(az aks show --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME --query "servicePrincipalProfile.clientId" --output tsv)
+
+# Get the ACR registry resource id
+ACR_ID=$(az acr show --name $ACR_NAME --resource-group $RESOURCE_GROUP --query "id" --output tsv)
+
+# Create role assignment
+az role assignment create --assignee $CLIENT_ID --role Reader --scope $ACR_ID
+```
+
 # Labs
 
 ## [01 - Building Java application containers](01%20-%20Building%20Java%20application%20containers/README.md)
