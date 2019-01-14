@@ -14,4 +14,4 @@ spec:
           - path: /api/todo
             backend:
               serviceName: myapptodo
-              servicePort: 80
+              servicePort: 8080

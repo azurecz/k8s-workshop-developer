@@ -10,8 +10,8 @@ appspa:
   service:
     type: ClusterIP
     name: myappspa
-    internalPort: 80
-    externalPort: 80
+    internalPort: 8080
+    externalPort: 8080
   ingress:
     enabled: true
     myservicepath: /
@@ -37,7 +37,7 @@ apptodo:
     type: ClusterIP
     name: myapptodo
     internalPort: 8080
-    externalPort: 80
+    externalPort: 8080
   ingress:
     enabled: true
     myservicepath: /api/todo
