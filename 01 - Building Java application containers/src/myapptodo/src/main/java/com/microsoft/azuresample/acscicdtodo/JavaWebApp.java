@@ -9,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

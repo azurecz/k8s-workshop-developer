@@ -10,7 +10,7 @@ services:
     build: ./myappspa
     image: myappspa:1 
     ports: 
-      - "8080:80"
+      - "8080:8080"
     environment: 
       TODOAPIURL: "http://localhost:8081"
   myapptodo:
