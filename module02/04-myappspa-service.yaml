@@ -6,6 +6,7 @@ spec:
   selector:
     app: myapp
     component: spa
+  type: LoadBalancer
   ports:
   - protocol: TCP
     port: 80
