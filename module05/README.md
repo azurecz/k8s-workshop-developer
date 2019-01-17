@@ -60,6 +60,30 @@ az configure --defaults acr=${ACR_NAME}
 az acr run -f module05/acr-flux/myapp-ci.yaml https://github.com/valda-z/java-k8s-workshop.git
 ```
 
+Now let's prepare task triggered by github commit. We will need access token for this task, there is description: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/ .
+
+```bash
+# now prepare task triggered by github commit
+az acr task create -n myapp -f module05/acr-flux/myapp-ci.yaml \
+  -c https://github.com/valda-z/java-k8s-workshop.git \
+  --pull-request-trigger-enabled true \
+  --git-access-token 0000000000000000000000000000000000000000
+
+# list tasks
+az acr task list -o table
+
+# list run history
+az acr task list-runs -o table
+```
+
+Now we can create small commit in our repo and check via `az acr task list-runs -o table` if build was triggered and status of build.
+
+### Handle CI (ACR build) to FLUX CD
+
+There is space for some homework and creative solution. You can use Azure LogicApp or any other technique to handle webhooks from ACR to trigger CD tasks (by commit changes to github repo with flux configuration).
+
+### CD by FLUX
+
 ## CI/CD in Jenkins (AKS + ACR)
 
 ## CI/CD in Azure DevOps
