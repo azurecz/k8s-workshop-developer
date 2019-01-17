@@ -78,13 +78,13 @@ az role assignment create --assignee $CLIENT_ID --role Reader --scope $ACR_ID
 
 # Labs
 
-## [01 - Building Java application containers](01%20-%20Building%20Java%20application%20containers/README.md)
+## [01 - Building Java application containers](module01/README.md)
 
-## [02 - Introduction to Azure Kubernetes Service](02%20-%20Introduction%20to%20Azure%20Kubernetes%20Service/README.md)
+## [02 - Introduction to Azure Kubernetes Service](module02/README.md)
 
-## [03 - Deploy Java application to Azure Kubernetes Service](03%20-%20Deploy%20Java%20application%20to%20Azure%20Kubernetes%20Service/README.md)
+## [03 - Deploy Java application to Azure Kubernetes Service](module03/README.md)
 
-## [04 - Optimizing deployment in Kubernetes](04%20-%20Optimizing%20deployment%20in%20Kubernetes/README.md)
+## [04 - Optimizing deployment in Kubernetes](module04/README.md)
 
-## [05 - CI-CD with AKS, GitHub and Jenkins](05%20-%20CI-CD%20with%20AKS%2C%20GitHub%20and%20Jenkins/README.md)
+## [05 - CI-CD with AKS, GitHub and Jenkins](module05/README.md)
 

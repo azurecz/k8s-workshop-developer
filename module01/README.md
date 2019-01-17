@@ -4,7 +4,7 @@
 
 ```bash
 # enter directory with source codes
-cd '01 - Building Java application containers'/
+cd module01
 
 # build SPA application in ACR - build has to be done from folder with source codes: java-k8s-workshop
 az acr build --registry $ACR_NAME --image myappspa:v1 ./src/myappspa

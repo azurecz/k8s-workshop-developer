@@ -33,7 +33,7 @@ az postgres server firewall-rule create \
 
 ```bash
 # goto directory for this lab
-cd ../'03 - Deploy Java application to Azure Kubernetes Service'/
+cd ../module03
 ```
 
 Replace your image names (ACR name) in files `myapp-deploy/myappspa-rs.yaml` and `myapp-deploy/myapptodo-rs.yaml`.

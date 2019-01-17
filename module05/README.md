@@ -2,7 +2,7 @@
 
 ```bash
 # goto directory for this lab
-cd ../'05 - CI-CD with AKS, GitHub and Jenkins'/
+cd ../module05
 ```
 
 
