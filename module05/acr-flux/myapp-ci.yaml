@@ -9,8 +9,8 @@ steps:
     when: ["-"]
   # push images to ACR
   - id: push-myappspa
-    push: {{.Run.Registry}}/myappspa:{{.Run.ID}}
+    push: ["{{.Run.Registry}}/myappspa:{{.Run.ID}}"]
     when: ["build-myappspa"]
   - id: push-myapptodo
-    push: {{.Run.Registry}}/myapptodo:{{.Run.ID}}
+    push: ["{{.Run.Registry}}/myapptodo:{{.Run.ID}}"]
     when: ["build-myapptodo"]
