@@ -41,6 +41,18 @@ Replace your image names (ACR name) in files `myapp-deploy/myappspa-rs.yaml` and
 Replace public IP address of your nginx ingress controller for host rule in files `myapp-deploy/myappspa-ing.yaml` and `myapp-deploy/myapptodo-ing.yaml`. 
 
 ```bash
+# Change yaml files to your ACR name
+sed -i 's/YOURACRNAME/'$ACR_NAME'/g' myapp-deploy/*.yaml
+
+# Change yaml files to your ingress public IP
+export INGRESS_IP=$(kubectl get svc default-ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
+echo "You will be able to access application on this URL: http://${INGRESS_IP}.xip.io"
+
+# Change YAML files for ingress
+sed -i 's/YOURINGRESSIP/'$INGRESS_IP'/g' myapp-deploy/*.yaml
+```
+
+```bash
 # create namespace
 kubectl create namespace myapp
 

@@ -36,8 +36,12 @@ az acr helm list
 helm update
 helm search ${ACR_NAME}
 
+# Get ingress public IP
+export INGRESS_IP=$(kubectl get svc default-ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
+echo "You will be able to access application on this URL: http://${INGRESS_IP}.xip.io"
+
 # deploy from ACR helm repository
-helm upgrade --install myrelease ${ACR_NAME}/myapp --namespace='myapp' --set-string appspa.image.repository="${ACR_NAME}.azurecr.io/myappspa",appspa.image.tag='v1',apptodo.image.repository="${ACR_NAME}.azurecr.io/myapptodo",apptodo.image.tag='v1',apphost='0.0.0.0.xip.io'
+helm upgrade --install myrelease ${ACR_NAME}/myapp --namespace='myapp' --set-string appspa.image.repository="${ACR_NAME}.azurecr.io/myappspa",appspa.image.tag='v1',apptodo.image.repository="${ACR_NAME}.azurecr.io/myapptodo",apptodo.image.tag='v1',apphost="${INGRESS_IP}.xip.io"
 
 # clean-up deployment
 helm delete --purge myrelease

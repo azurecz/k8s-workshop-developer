@@ -8,7 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: "/"
 spec:
   rules:
-    - host: 0.0.0.0.xip.io
+    - host: YOURINGRESSIP.xip.io
       http:
         paths:
           - path: /
