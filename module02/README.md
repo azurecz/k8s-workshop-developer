@@ -1,6 +1,11 @@
 # Jump to lab directory
 cd module02
 
+# Change yaml files to your ACR name
+```
+sed -i 's/YOURACRNAME/'$ACR_NAME'/g' *.yaml
+```
+
 # Deploy single Pod
 First we will deploy single Pod. Note we are using imagePullPolicy set to Always, which requires download image always from Azure Container Registry rather than using cache on node. This might sound less efficient, but is considered best practice from security perspective. In our simple example whole AKS cluster is trusted for ACR, but you might want different administrators have different level of access to ACR. Credentials to ACR would be checked everytime Kubernetes downloads image from repository and we do not want to bypass this by running from unathenticated local cache on node.
 ```
