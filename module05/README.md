@@ -5,7 +5,6 @@
 cd ../module05
 ```
 
-
 ## Prepare to CI/CD with helm.
 
 Helm is template engine (deployment engine) for kubernetes.
@@ -58,7 +57,7 @@ There we will define two build tasks - for building SPA web GUI and TODO microse
 # set default ACR name
 az configure --defaults acr=${ACR_NAME}
 # build manualy / last parameter of command is your forked github repo
-az acr run -f acr-flux/myapp-ci.yaml https://github.com/valda-z/java-k8s-workshop.git
+az acr run -f module05/acr-flux/myapp-ci.yaml https://github.com/valda-z/java-k8s-workshop.git
 ```
 
 ## CI/CD in Jenkins (AKS + ACR)
