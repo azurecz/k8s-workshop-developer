@@ -6,7 +6,7 @@ metadata:
 spec:
   containers:
     - name: myappspa
-      image: tomasacrdemo.azurecr.io/myappspa:v1   # Best practice - always define specific tag, do not rely on latest
+      image: YOURACRNAME.azurecr.io/myappspa:v1   # Best practice - always define specific tag, do not rely on latest
       imagePullPolicy: Always    # Best practice for security - user will no access to image might get it from local cache
       env:
       - name: NGINX_HTTP_PORT_NUMBER
