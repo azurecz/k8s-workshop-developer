@@ -2,10 +2,10 @@ version: 1.0-preview-1
 steps:
   # build images, concurrently
   - id: build-myappspa
-    build: -t {{.Run.Registry}}/myappspa:{{.Run.ID}} -f '01 - Building Java application containers'/src/myappspa/Dockerfile .
+    build: -t {{.Run.Registry}}/myappspa:{{.Run.ID}} -f module01/src/myappspa/Dockerfile ./module01/src/myappspa
     when: ["-"]
   - id: build-myapptodo
-    build: -t {{.Run.Registry}}/myapptodo:{{.Run.ID}} -f '01 - Building Java application containers'/src/myapptodo/Dockerfile .
+    build: -t {{.Run.Registry}}/myapptodo:{{.Run.ID}} -f module01/src/myapptodo/Dockerfile ./module01/src/myapptodo
     when: ["-"]
   # push images to ACR
   - id: push-myappspa
