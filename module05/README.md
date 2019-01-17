@@ -88,6 +88,96 @@ There is space for some homework and creative solution. You can use Azure LogicA
 
 ### CD by FLUX
 
+#### Prepare configuration github repo
+
+Fork our base FLUX repo: https://github.com/azurecz/java-k8s-workshop-flux and setup configuration files in repo.
+Yaml files for deployment are stored in folder `wokloads`.
+
+In bash change your working directory now to `java-k8s-workshop-flux`.
+
+```bash
+# Change yaml files to your ACR name
+sed -i 's/YOURACRNAME/'$ACR_NAME'/g' workloads/*.yaml
+
+# Change yaml files to your ingress public IP
+export INGRESS_IP=$(kubectl get svc default-ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
+echo "You will be able to access application on this URL: http://${INGRESS_IP}.xip.io"
+
+# Change YAML files for ingress
+sed -i 's/YOURINGRESSIP/'$INGRESS_IP'/g' workloads/*.yaml
+
+# and finally you have to commit changes
+git add *
+git commit -m "configuration changed"
+git push
+```
+
+#### Install flux
+
+Now let's install flux to AKS cluster.
+https://github.com/weaveworks/flux/blob/master/site/helm-get-started.md#install-weave-flux
+
+```bash
+# add flux repo
+helm repo add weaveworks https://weaveworks.github.io/flux
+# apply CRD
+kubectl apply -f https://raw.githubusercontent.com/weaveworks/flux/master/deploy-helm/flux-helm-release-crd.yaml
+
+# install and configure FLUX
+helm upgrade -i flux \
+--set helmOperator.create=true \
+--set helmOperator.createCRD=false \
+--set git.url=git@github.com:valda-z/java-k8s-workshop-flux.git \
+--namespace flux \
+weaveworks/flux
+```
+
+#### Setup github write access for flux
+
+See description there:
+https://github.com/weaveworks/flux/blob/master/site/helm-get-started.md#giving-write-access
+
+
+```bash
+# get flux public key
+fluxctl identity --k8s-fwd-ns flux
+```
+
+In order to sync your cluster state with git you need to copy the public key and create a deploy key with write access on your GitHub repository.
+
+Open GitHub, navigate to your fork, go to **Setting > Deploy keys**, click on **Add deploy key**, give it a name, check **Allow write access**, paste the Flux public key and click **Add key**.
+
+Once Flux has confirmed access to the repository, it will start deploying the workloads of **java-k8s-workshop-flux**.
+
+```bash
+# check pods
+kubectl get pods --all-namespaces
+```
+
+Now we can see that myapptodo POD is failing because we have no secrets with connection string to DB.
+
+```bash
+# create secret for myapptodo
+POSTGRESQL_URL="jdbc:postgresql://${POSTGRESQL_NAME}.postgres.database.azure.com:5432/todo?user=${POSTGRESQL_USER}@${POSTGRESQL_NAME}&password=${POSTGRESQL_PASSWORD}&ssl=true"
+kubectl create secret generic myapptodo-secret \
+  --from-literal=postgresqlurl="$POSTGRESQL_URL" \
+  --namespace myapp
+```
+
+Now you can access application on this URL:
+```bash
+# Get ingress Public IP
+export INGRESS_IP=$(kubectl get svc default-ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
+echo "You will be able to access application on this URL: http://${INGRESS_IP}.xip.io"
+```
+
+Finally you can change some configuration in flux configuration github repo and observe how flux will deploy changes.
+
+```bash
+# check flux logs
+kubectl -n flux logs deployment/flux -f
+```
+
 ## CI/CD in Jenkins (AKS + ACR)
 
 ## CI/CD in Azure DevOps
