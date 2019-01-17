@@ -8,6 +8,11 @@ cd module01
 
 # build SPA application in ACR - build has to be done from folder with source codes: java-k8s-workshop
 az acr build --registry $ACR_NAME --image myappspa:v1 ./src/myappspa
+
+# for purpose of lab create v2 of your app by only changing from v1 to v2 in version file and build container with v2 tag
+echo v2 > ./src/myappspa/version
+az acr build --registry $ACR_NAME --image myappspa:v2 ./src/myappspa
+
 # build JAVA microservice (spring-boot)
 az acr build --registry $ACR_NAME --image myapptodo:v1 ./src/myapptodo
 ```
