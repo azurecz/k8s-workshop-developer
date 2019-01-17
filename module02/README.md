@@ -139,8 +139,25 @@ Focus on version which is on end of string. No in different window deploy new ve
 kubectl apply -f 06-myappspa-deploy.yaml
 ```
 
-
 # Canary release
+Sometimes rolling upgrade is too fast. You would like to release more slowly and deploy one canary Pod and observe behavior for some time before rolling other instances to new version as well. Remember our Service definition is based on labels app and component, not type. We can create new Deployment with different type value. It will behave as separate Deployment, but from Service perspective it will look the same so Service will include it balancing.
+
+First let's rollback to version one. We can simply deploy Deployment with v1 image tag again.
+```
+kubectl apply -f 07-myappspa-deploy.yaml
+```
+
+Keep pinging app in one window. Wait for rollback to finish so we get only v1 responses.
+```
+while true; do curl $extPublicIP/info.txt; done
+```
+
+OK. Now let's deploy canary Deployment with single Pod. We should see roughly 25% of requests hit v2.
+```
+kubectl apply -f 08-myappspa-canary-deploy.yaml
+```
+
+Note native Kubernetes tools will assign traffic based on number of Pods. Sometimes you might want to send just 10% of traffic to canary, but that would require running 9 Pods of v1 and 1 Pod of v2. Or you might want send traffic to canary based on information in request header (such as debug flag). This is not possible with plain Kubernetes, but there are extentension that allow that. Most popular is Istio which is outside of scope of this lab.
 
 # Install Helm and Ingress (WORK IN PROGRESS)
 ## AKS + helm
