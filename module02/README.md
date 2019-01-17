@@ -91,11 +91,54 @@ kubectl get pods --show-labels
 Kubernetes have killed one of your Pods. Now we have 4 instances, but desired state is 3, so controller removed one of those.
 
 # Create externally accessible Service
+Kubernetes includes internal load balancer and service discovery called Service. This creates internal virtual IP address (cluster IP), load balancing rules are DNS records in internal DNS service. In order to get access to Service from outside AKS has implemented driver for type: LoadBalancer which calls Azure and deploy rules to Azure Load Balancer. By default it will create externally accessible public IP, but can be also configured for internal LB (for apps that should be accessible only within VNET or via VPN).
+
+Let's create one. Note "selector". That is way how Service identifies Pods to send traffic to. We have intentionaly included labels app and component, but not type (you will see why later in lab).
+```
+kubectl apply -f 04-myappspa-service.yaml
+kubectl get service
+```
+
+Note that external IP can be in pending state for some time until Azure configures everything.
+
+Wait for IP to get allocated. Kubectl supports jsonpath for searching and getting only specific data. This can be very useful in scripts. Get external IP and check you can access app in browser and via curl.
+```
+export extPublicIP=$(kubectl get service myappspa -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+curl $extPublicIP/info.txt
+```
+
+Is traffic really balanced to instances? Let's find out.
+```
+while true; do curl $extPublicIP/info.txt; done
+```
 
 # Deploy another Pod and test connectivity
-(check DNS entries from Pod, check curl from Pod, check curl from outside, check balancing)
+What about accessing Service from other Pods? This is what cluster IP is for and there is internal DNS name resolution. We will no create simple ubuntu-based Pod.
+```
+kubectl apply -f 05-ubuntu-pod.yaml
+```
+
+For troubleshooting you can exec into container and run some commands there or even jump using interactive mode to shell. Note this is just for troubleshooting - you should never change anything inside running containers this way. Always build new container image or modify external configuration (we will come to this later) rather than doing things inside.
+
+Jump into container and try access to service using DNS record.
+```
+kubectl exec -ti ubuntu -- /bin/bash
+curl myappspa/info.txt
+```
 
 # Rolling upgrade
+Kubernetes Deployment support rolling upgrade to newer container images. If you change image in desired state (typically you change tag to roll to new version of your app). Deployment will create new ReplicaSet with new version and orchestrate rolling upgrade. It will add new version Pod and when it is fully up it removes one with older version and so until original ReplicaSet is on size 0. Since tags we used for Service identification are the same for both we will not experience any downtime.
+
+In one window start curl in loop.
+```
+while true; do curl $extPublicIP/info.txt; done
+```
+
+Focus on version which is on end of string. No in different window deploy new version of Deploment with different image tag and see what is going on.
+```
+kubectl apply -f 06-myappspa-deploy.yaml
+```
+
 
 # Canary release
 
