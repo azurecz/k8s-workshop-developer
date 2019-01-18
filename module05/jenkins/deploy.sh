@@ -7,7 +7,7 @@
 #####################################################################
 # user defined parameters
 INGRESSDNS=""
-POSTGRESJDBCURL=""
+POSTGRESJDBCURL="" 
 JENKINSPASSWORD="kube123"
 ACRNAME=""
 ACRKEY=""
