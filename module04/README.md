@@ -44,7 +44,35 @@ kubectl apply -f 01-myappspa-deploy.yaml -n myapp
 Wait until Deployment object upgrades our environment. Close existing application window and open our app again. You should see image change from Microsoft logo to Azure logo we have mapped to application via share.
 
 # Use ConfigMap to tweek nginx.conf
-(enable /health and refactor probes)
+Currently for our probes we are accessing root of SPA application which is too big taking away network and storage IO. We might one some more lightweight probe to check health status. Also we want to standardize on single url for all apps (/health) and do not want to implement changes in code itself. NGINX allows for configuring such health paths itself.
+
+We want to change NGINX configuration without rebuilding container image. There might more configuration options that we want to tweek during deployment perhaps providing different settings for dev, test and production environment. General rule is not to change container image between environments!
+
+We will solve this by using ConfigMap in Kubernetes. It can consist of key value pair that we can map into our Pod as environmental variables. In our case configuration is actualy more complex configuration file. This is also possible with ConfigMap. First let's use configuration file healthvhost.conf and package it as ConfigMap. 
+
+```
+kubectl create configmap healthvhostconf --from-file=healthvhost.conf -n myapp
+kubectl describe configmap healthvhostconf -n myapp
+```
+
+First we will use changed Deployment with ConfigMap mapped to file system to proper locaiton where nginx expects configuration file and check it works.
+
+```
+kubectl apply -f 02-myappspa-deploy.yaml -n myapp
+```
+
+Wait for Deployment to redeploy Pods and check our /health URL works.
+```
+curl http://$INGRESS_IP.xip.io/health
+```
+
+Looks good. We will now change our probes implementation to point to /health.
+```
+kubectl apply -f 03-myappspa-deploy.yaml -n myapp
+```
+
+# Use init container to create version file outside of main container startup script
+
 
 # Use sidecar container to modify log messages
 

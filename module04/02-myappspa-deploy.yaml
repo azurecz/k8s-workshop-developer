@@ -40,9 +40,14 @@ spec:
         volumeMounts:
           - name: myimages
             mountPath: /opt/bitnami/nginx/html/images
+          - name: config-volume
+            mountPath: /opt/bitnami/nginx/conf/vhosts/
       volumes:
         - name: myimages
           azureFile:
             secretName: images-secret
             shareName: images
             readOnly: true
+        - name: config-volume
+          configMap:
+            name: healthvhostconf
