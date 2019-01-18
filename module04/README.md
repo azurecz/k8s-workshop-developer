@@ -43,7 +43,7 @@ kubectl apply -f 01-myappspa-deploy.yaml -n myapp
 
 Wait until Deployment object upgrades our environment. Close existing application window and open our app again. You should see image change from Microsoft logo to Azure logo we have mapped to application via share.
 
-# Use ConfigMap to tweek nginx.conf
+# Use ConfigMap to tweek nginx configuration
 Currently for our probes we are accessing root of SPA application which is too big taking away network and storage IO. We might one some more lightweight probe to check health status. Also we want to standardize on single url for all apps (/health) and do not want to implement changes in code itself. NGINX allows for configuring such health paths itself.
 
 We want to change NGINX configuration without rebuilding container image. There might more configuration options that we want to tweek during deployment perhaps providing different settings for dev, test and production environment. General rule is not to change container image between environments!
@@ -71,7 +71,7 @@ Looks good. We will now change our probes implementation to point to /health.
 kubectl apply -f 03-myappspa-deploy.yaml -n myapp
 ```
 
-# Use init container to create version file outside of main container startup script
+# Use init container to create information file outside of main container startup script
 Suppose now we need to know inside of our Pod what Kubernetes namespace it has been created in. More over we want to write it into file that will be accessible via URL. We will use passing this information via Downward API and also use init container to prepare file before running our main container.
 
 We will add initContainer to our Pod definition. That container will be started before all other containers and Kubernetes will wait for it to finish first. This can used to preload cache or do any other preparations before you are ready to run your main container. We will also leverage Downward API to inject information about used image into Pod as environmental variable. For now init container will just print it on screen so we can capture it in logs.
