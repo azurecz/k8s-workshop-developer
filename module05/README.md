@@ -180,4 +180,23 @@ kubectl -n flux logs deployment/flux -f
 
 ## CI/CD in Jenkins (AKS + ACR)
 
+```bash
+# install jenkins (from repository java-k8s-workshop, directory module05)
+cd module05
+
+# Get ingress Public IP
+export INGRESS_IP=$(kubectl get svc default-ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
+
+# postgres URL
+POSTGRESQL_URL="jdbc:postgresql://${POSTGRESQL_NAME}.postgres.database.azure.com:5432/todo?user=${POSTGRESQL_USER}@${POSTGRESQL_NAME}&password=${POSTGRESQL_PASSWORD}&ssl=true"
+
+# install jenkins - please put your github repository name to --giturl parameter
+./jenkins/deploy.sh \
+  --ingressdns "${INGRESS_IP}.xip.io" \
+  --postgresjdbcurl "${POSTGRESQL_URL}" \
+  --acrname "${ACR_NAME}" \
+  --acrkey "${ACR_KEY}" \
+  --giturl "https://github.com/azurecz/java-k8s-workshop.git"
+```
+
 ## CI/CD in Azure DevOps
