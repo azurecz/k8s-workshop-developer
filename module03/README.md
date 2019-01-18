@@ -64,7 +64,4 @@ kubectl create secret generic myapptodo-secret \
 
 # create deployment
 kubectl apply -f myapp-deploy --namespace myapp
-
-# cleanup deployment
-kubectl delete namespace myapp
 ```
