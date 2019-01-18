@@ -180,6 +180,17 @@ kubectl -n flux logs deployment/flux -f
 
 ## CI/CD in Jenkins (AKS + ACR)
 
+How it works?
+
+Jenkis is deployed directly to AKS cluster, master jenkins container exposes user interface on public IP address on port 8080. Jenkins build agents are deployed ad-hoc when build job needs agent and is destroyed just after build.
+
+Build pipeline is in Jenkinsfile which is part of source code tree in github. Build pipeline consists these steps:
+
+* clone source codes from git
+* build docker images (and applications)
+* push images to Azure Container Registry
+* deploy new version via helm to AKS cluster
+
 ```bash
 # install jenkins (from repository java-k8s-workshop, directory module05)
 cd module05
