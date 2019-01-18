@@ -88,7 +88,7 @@ throw_if_empty --jenkinspassword $JENKINSPASSWORD
 # constants
 JENKINSJOBNAME="01-MYAPP"
 JENKINS_USER="admin"
-JENKINSSERVICENAME="myjenkins"
+JENKINSSERVICENAME="myjenkins001"
 
 #####################################################################
 # internal variables
@@ -97,8 +97,8 @@ REGISTRY_SERVER=""
 REGISTRY_USER_NAME=""
 REGISTRY_PASSWORD=""
 ACRSERVER="${ACRNAME}.azurecr.io"
-CREDENTIALS_ID=ACRSERVER
-CREDENTIALS_DESC=ACRSERVER
+CREDENTIALS_ID="${ACRSERVER}"
+CREDENTIALS_DESC="${ACRSERVER}"
 
 #############################################################
 # supporting functions
@@ -158,9 +158,9 @@ KUBE_JENKINS=""
 while [  -z "$KUBE_JENKINS" ]; do
     echo -n "."
     sleep 3
-    KUBE_JENKINS=$(kubectl get pods | grep "\-jenkins\-" | grep "Running" | awk '{print $1;}')
+    KUBE_JENKINS=$(kubectl get pods | grep "${JENKINSSERVICENAME}\-" | grep "Running" | awk '{print $1;}')
     if [ -z "${KUBE_JENKINS}" ]; then
-    	KUBE_JENKINS=$(kubectl get pods | grep "\-jenkins\-" | grep "CrashLoopBackOff" | awk '{print $1;}')
+    	KUBE_JENKINS=$(kubectl get pods | grep "\${JENKINSSERVICENAME}\-" | grep "CrashLoopBackOff" | awk '{print $1;}')
 	if [ -n "${KUBE_JENKINS}" ]; then
 	    helm del --purge ${JENKINSSERVICENAME}
 	    sleep 10
@@ -179,7 +179,8 @@ while [  -z "$JENKINS_KEY" ]; do
     echo -n "."
     sleep 5
     retry_until_successful kubectl exec ${KUBE_JENKINS} -- curl -D - -s -k -X POST -c /tmp/cook.txt -b /tmp/cook.txt -d j_username=${JENKINS_USER} -d j_password=${JENKINSPASSWORD} http://localhost:8080/j_security_check &>/dev/null
-    JENKINS_KEY=$(kubectl exec ${KUBE_JENKINS} -- curl -D - -s -k -c /tmp/cook.txt -b /tmp/cook.txt http://localhost:8080/me/configure | grep "apiToken" | sed -n 's/.*id=.apiToken.\(.*\)\/>.*/\1/p' | sed -n 's/.*value=\"\([[:xdigit:]^>]*\)\".*/\1/p' 2>/dev/null)
+    JENKINS_CRUMB=$(kubectl exec ${KUBE_JENKINS} -- curl -D - -s -k -c /tmp/cook.txt -b /tmp/cook.txt http://localhost:8080/me/configure | grep "crumb.init" | sed -n 's/.*crumb.init.\(.*\)\/>.*/\1/p' | sed -n 's/.*, \"\([0-9abcdef]*\)\".*/\1/p' 2>/dev/null)
+    JENKINS_KEY=$(kubectl exec ${KUBE_JENKINS} -- curl -D - -s -k -c /tmp/cook.txt -X POST -b /tmp/cook.txt  localhost:8080/me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken -H "Content-Type: application/x-www-form-urlencoded" -H "Jenkins-Crumb: ${JENKINS_CRUMB}" | sed -n 's/.*tokenValue\"\:\"\([0-9abcdef]*\)\".*/\1/p' 2>/dev/null)
 done
 echo -n "${JENKINS_KEY}"
 echo ""
@@ -315,6 +316,9 @@ echo "  .. install kubernetes security assets"
 ### create secrets (which will be used by helm install later on)
 kubectl create secret generic ${HELMRELEASENAME}-myapp --from-literal=postgresqlurl="${POSTGRESJDBCURL}" --namespace ${APPK8SNS}
 
+# Jenkins system acount
+kubectl create clusterrolebinding jenkinsdefault --clusterrole cluster-admin --serviceaccount=default:default
+
 #############################################################
 # wait for jenkins public IP
 #############################################################
@@ -325,7 +329,7 @@ JENKINS_IP=""
 while [  -z "$JENKINS_IP" ]; do
     echo -n "."
     sleep 3
-    JENKINS_IP=$(kubectl describe service ${JENKINSSERVICENAME}-jenkins | grep "LoadBalancer Ingress:" | awk '{print $3}')
+    JENKINS_IP=$(kubectl describe service ${JENKINSSERVICENAME} | grep "LoadBalancer Ingress:" | awk '{print $3}')
 done
 echo ""
 
