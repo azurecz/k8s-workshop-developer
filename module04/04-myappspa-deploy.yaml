@@ -13,6 +13,18 @@ spec:
     spec:
       securityContext:   # Best practice for security - if possible never run as root (which is default)
         runAsNonRoot: true     # Make sure container images do not use root
+      initContainers:
+      - name: info
+        image: ubuntu
+        securityContext:
+          runAsUser: 1001
+        command: ["/bin/bash"]
+        args: ["-c", "echo $NAMESPACE"]
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
       containers:
       - name: myappspa
         image: YOURACRNAME.azurecr.io/myappspa:v2   # Best practice - always define specific tag, do not rely on latest
@@ -24,11 +36,11 @@ spec:
         - containerPort: 8080
         livenessProbe:    # Best practice for stability - always define probes to detect hanged process
           httpGet:
-            path: /
+            path: /health
             port: 8080
         readinessProbe:
           httpGet:
-            path: /
+            path: /health
             port: 8080
         resources:    # Best practice for stability
           limits:    # Always limit resources to keep nodes healthy (eg. prevent memory leak to hurt other containers)
@@ -40,9 +52,14 @@ spec:
         volumeMounts:
           - name: myimages
             mountPath: /opt/bitnami/nginx/html/images
+          - name: config-volume
+            mountPath: /opt/bitnami/nginx/conf/vhosts/
       volumes:
         - name: myimages
           azureFile:
             secretName: images-secret
             shareName: images
             readOnly: true
+        - name: config-volume
+          configMap:
+            name: healthvhostconf

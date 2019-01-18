@@ -72,6 +72,27 @@ kubectl apply -f 03-myappspa-deploy.yaml -n myapp
 ```
 
 # Use init container to create version file outside of main container startup script
+Suppose now we need to know inside of our Pod what Kubernetes namespace it has been created in. More over we want to write it into file that will be accessible via URL. We will use passing this information via Downward API and also use init container to prepare file before running our main container.
+
+We will add initContainer to our Pod definition. That container will be started before all other containers and Kubernetes will wait for it to finish first. This can used to preload cache or do any other preparations before you are ready to run your main container. We will also leverage Downward API to inject information about used image into Pod as environmental variable. For now init container will just print it on screen so we can capture it in logs.
+```
+kubectl apply -f 04-myappspa-deploy.yaml -n myapp
+```
+
+Checkout logs from our info container
+```
+kubectl logs myappspa-7b74455b84-rf2c6 -n myapp -c info   # Change to your Pod name
+```
+
+Should work. Now we want to put this information as file on our site so we need some way how init container can write to file system that main container can read from. We will use Volume for this, but this time it will not be implemented as outside resource, but rather is Volume valid only on Pod level mounted to both containers. Let's do it.
+```
+kubectl apply -f 05-myappspa-deploy.yaml -n myapp
+```
+
+Check it out
+```
+curl http://$INGRESS_IP.xip.io/info/namespace.txt
+```
 
 
 # Use sidecar container to modify log messages
