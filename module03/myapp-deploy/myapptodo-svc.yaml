@@ -5,10 +5,11 @@ metadata:
     app: myapptodo
   name: myapptodo
 spec:
+  selector:
+    app: myapp
+    component: todo
   ports:
   - port: 8080
     protocol: TCP
     targetPort: 8080
     name: http
-  selector:
-    app: myapptodo

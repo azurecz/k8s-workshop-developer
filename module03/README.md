@@ -45,7 +45,7 @@ Replace public IP address of your nginx ingress controller for host rule in file
 sed -i 's/YOURACRNAME/'$ACR_NAME'/g' myapp-deploy/*.yaml
 
 # Get ingress public IP
-export INGRESS_IP=$(kubectl get svc default-ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
+export INGRESS_IP=$(kubectl get service ingress-nginx-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 echo "You will be able to access application on this URL: http://${INGRESS_IP}.xip.io"
 
 # Change YAML files for ingress

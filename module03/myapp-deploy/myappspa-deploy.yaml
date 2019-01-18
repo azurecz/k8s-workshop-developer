@@ -1,0 +1,39 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: myappspa
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: myapp   # This label identifies our application, used for filtering output
+        component: spa    # This label identifies component, used for Service definition
+        type: release    # This label identifies actual release vs. canary etc.
+    spec:
+      securityContext:   # Best practice for security - if possible never run as root (which is default)
+        runAsNonRoot: true     # Make sure container images do not use root
+      containers:
+      - name: myappspa
+        image: YOURACRNAME.azurecr.io/myappspa:v2   # Best practice - always define specific tag, do not rely on latest
+        imagePullPolicy: Always    # Best practice for security - user will no access to image might get it from local cache
+        env:
+        - name: NGINX_HTTP_PORT_NUMBER
+          value: "8080"
+        ports:  # We cannot run on ports <1024 because that would require root
+        - containerPort: 8080
+        livenessProbe:    # Best practice for stability - always define probes to detect hanged process
+          httpGet:
+            path: /
+            port: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+        resources:    # Best practice for stability
+          limits:    # Always limit resources to keep nodes healthy (eg. prevent memory leak to hurt other containers)
+            cpu: 100m
+            memory: 128Mi
+          requests:     # Always define request so scheduler can decide better about placements (required for node autoscaling)
+            cpu: 100m
+            memory: 128Mi
