@@ -30,6 +30,8 @@
                         container(name: 'docker') {
                           sh "docker login -p "+env.PASSWORD+" -u "+env.USERNAME+" " + params.acr
 
+                          sh "pwd"
+                          sh "ls -al"
                           sh "docker build -t "+params.acr+"/"+myimagenamespa+":${env.BUILD_NUMBER} ./module01/src/myappspa"
                           sh "docker tag "+params.acr+"/"+myimagenamespa+":${env.BUILD_NUMBER} "+params.acr+"/"+myimagenamespa+":latest"
                           sh "docker push "+params.acr+"/"+myimagenamespa+":latest"
