@@ -164,31 +164,33 @@ kubectl apply -f 08-myappspa-canary-deploy.yaml
 
 Note native Kubernetes tools will assign traffic based on number of Pods. Sometimes you might want to send just 10% of traffic to canary, but that would require running 9 Pods of v1 and 1 Pod of v2. Or you might want send traffic to canary based on information in request header (such as debug flag). This is not possible with plain Kubernetes, but there are extentension that allow that. Most popular is Istio which is outside of scope of this lab.
 
-# Install Helm and Ingress (WORK IN PROGRESS)
-## AKS + helm
+# Clean up
+At this point let's delete our experiments. We will deploy complete application in next module.
+
+```
+kubectl delete deployment myappspa,myappspa-canary
+kubectl delete service myappspa
+```
+
+# Install Helm and Ingress
+In module03 we will install complete application including reverse proxy (Ingress object). It allows for creation of L7 rules including things such as cookie based session persistency, TLS termination, URL routing and other important features. Before we do that we need to install Ingress controller and implementation. In our lab we will use NGINX flavor.
+
+In order to ease installation we will use Helm as deployment and packaging tool. Basically Helm allows to package multiple Kubernetes objects into single operation, provide versioning and lifecycle management. Before we move to module03 let's prepare Helm environment. You will use Helm heavily in module05 where you will get more details.
+
+Helm CLI component is preinstalled in Azure Cloud Shell so you can skip this step. If you are using your own computer first you would need to download Helm CLI.
+```
+cd ./helm
+wget https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz
+tar -zxvf helm-v2.9.1-linux-amd64.tar.gz
+sudo cp linux-amd64/helm /usr/local/bin
+rm -rf linux-amd64/
+```
+
+Create account in Kubernetes for Helm, install server-side component and check it.
 
 ```bash
 # Create a service account for Helm and grant the cluster admin role.
-cat <<EOF | kubectl create -f -
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: tiller
-  namespace: kube-system
----
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRoleBinding
-metadata:
-  name: tiller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-- kind: ServiceAccount
-  name: tiller
-  namespace: kube-system
-EOF
+kubectl apply -f helm-account.yaml
 
 # initialize helm
 helm init --service-account tiller --upgrade
@@ -197,4 +199,9 @@ helm init --service-account tiller --upgrade
 helm version
 ```
 
-
+Let's now use Helm to deploy nginx Ingress solution.
+```
+helm install --name ingress stable/nginx-ingress \
+  --set rbac.create=true \
+  --set controller.image.tag=0.21.0
+```
