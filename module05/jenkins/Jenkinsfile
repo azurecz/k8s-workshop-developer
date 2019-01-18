@@ -26,12 +26,9 @@
                     git url: params.giturl, branch: params.gitbranch            
                 }
                 stage('Build docker images') {
-                    dir('target'){
                         container(name: 'docker') {
                           sh "docker login -p "+env.PASSWORD+" -u "+env.USERNAME+" " + params.acr
 
-                          sh "pwd"
-                          sh "ls -al"
                           sh "docker build -t "+params.acr+"/"+myimagenamespa+":${env.BUILD_NUMBER} ./module01/src/myappspa"
                           sh "docker tag "+params.acr+"/"+myimagenamespa+":${env.BUILD_NUMBER} "+params.acr+"/"+myimagenamespa+":latest"
                           sh "docker push "+params.acr+"/"+myimagenamespa+":latest"
@@ -42,7 +39,6 @@
                           sh "docker push "+params.acr+"/"+myimagenametodo+":latest"
                           sh "docker push "+params.acr+"/"+myimagenametodo+":${env.BUILD_NUMBER}"
                         }
-                    }
                 }
                 stage('Deploy docker image') {
                     container(name: 'kubectl') {
