@@ -49,7 +49,7 @@
                             def overrides = "appspa.image.repository='"+params.acr+"/"+myimagenamespa+"',appspa.image.tag=${env.BUILD_NUMBER},apptodo.image.repository='"+params.acr+"/"+myimagenametodo+"',apptodo.image.tag=${env.BUILD_NUMBER},apphost='"+params.ingressdns+"'"
                             def releaseName = params.releasename
                             def namespace = "'"+params.appns+"'"
-                            def chart_dir = myimagename
+                            def chart_dir = "module05/helm/myapp"
                             
                             sh "helm version"
                             sh "helm lint ${chart_dir}"
