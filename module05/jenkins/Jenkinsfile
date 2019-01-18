@@ -44,12 +44,12 @@
                     container(name: 'kubectl') {
                         sh "kubectl get nodes"
                     }
-                    dir('target'){
+                    dir('module05/helm'){
                         container(name: 'helm') {
                             def overrides = "appspa.image.repository='"+params.acr+"/"+myimagenamespa+"',appspa.image.tag=${env.BUILD_NUMBER},apptodo.image.repository='"+params.acr+"/"+myimagenametodo+"',apptodo.image.tag=${env.BUILD_NUMBER},apphost='"+params.ingressdns+"'"
                             def releaseName = params.releasename
                             def namespace = "'"+params.appns+"'"
-                            def chart_dir = "module05/helm/myapp"
+                            def chart_dir = "myapp"
                             
                             sh "helm version"
                             sh "helm lint ${chart_dir}"
