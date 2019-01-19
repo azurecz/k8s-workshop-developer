@@ -94,11 +94,39 @@ Check it out
 curl http://$INGRESS_IP.xip.io/info/namespace.txt
 ```
 
+# Use CronJob to periodically extract data from Postgresql
+In this example we will investigate how to use Kubernetes to run scheduled batch jobs. This is very useful for certain computation scenarios such as rendering or machine learning, but also for periodical tasks. In our demo we will shedule periodic task to dump data from postgresql into csv file stored on share in Azure storage.
+
+We will reuse storage account we have created for images, but create new share in it.
+```
+az storage share create -n exports \
+    --account-name $STORAGE_NAME \
+    --account-key $STORAGE_KEY
+```
+
+Than we need to gather connection details you used for creating database in previous modules and store them in Kubernetes secret with naming convention used by psql command line utility.
+```
+kubectl create secret generic psql -n myapp \
+    --from-literal PGUSER=$POSTGRESQL_USER@$POSTGRESQL_NAME \
+    --from-literal PGPASSWORD=$POSTGRESQL_PASSWORD \
+    --from-literal PGHOST=$POSTGRESQL_NAME.postgres.database.azure.com \
+    --from-literal PGDATABASE=todo
+```
+
+Schedule job to run every 2 minutes.
+```
+kubectl apply -f 06-export.yaml -n myapp
+```
+
+Job will run every 2 minutes. After while check files in your storage account.
+
+```
+az storage file list -s exports -o table \
+    --account-name $STORAGE_NAME \
+    --account-key $STORAGE_KEY
+```
 
 # Use sidecar container to modify log messages
-
-
-# Use CronJob to periodically extract data from Postgresql
 
 # Enhance Ingress
 ## Enable cookie-based sticky sessions
