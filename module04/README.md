@@ -1,6 +1,7 @@
 # Prepare deployment files
 cd ../module04
 sed -i 's/YOURACRNAME/'$ACR_NAME'/g' *.yaml
+sed -i 's/YOURINGRESSIP/'$INGRESS_IP'/g' *.yaml
 
 
 # Use Volume to map persistent static content shared across SPA Pods
@@ -126,15 +127,36 @@ az storage file list -s exports -o table \
     --account-key $STORAGE_KEY
 ```
 
-# Use sidecar container to modify log messages
 
 # Enhance Ingress
+Ingress object allows for basic configuration such as routing rules, but NGINX implementation support way more features beyond what is available in Ingress specification. Enhanced options can be configured using annotations.
+
 ## Enable cookie-based sticky sessions
+At this point our front end is load balanced with no session persistence. That is OK for our application, but suppose we work with different one, that is not fully stateless and therefore need to ensure client session always go to same instance. 
+
+First check you are getting responses from multiple replicas.
+```
+curl http://${INGRESS_IP}.xip.io/info.txt   # Repeat multiple times
+```
+
+Deploy modified Ingress object with annotation to enable session cookie-based persistence.
+```
+kubectl apply -f 07-myappspa-ing.yaml -n myapp
+```
+
+Now we will capture cookie and use it with next request. Ensure you are always getting response from the same instance.
+
+```
+curl -c mycookie http://${INGRESS_IP}.xip.io/info.txt
+curl -b mycookie http://${INGRESS_IP}.xip.io/info.txt   # Repeat multiple times
+```
+
 ## Enable rate limit
 ## Enable HTTPS
 ## Autoenroll Let's encrypt certificate (optional)
 ## Enable authentication on Ingress (optional)
 
 
+# Use sidecar container to modify log messages
 
 
