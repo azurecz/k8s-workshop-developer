@@ -37,7 +37,7 @@ kubectl create secret generic images-secret \
     -n myapp
 ```
 
-Deploy modified myappspa deployment. We are using Volume implemented by our share and map it container file system on path where images are. Note that Volume mapping takes precedent over existing files. All created Pods will see the same share.
+Deploy modified myappspa deployment. We are using Volume implemented by our share and map it to container file system on path where images are. Note that Volume mapping takes precedent over existing files. All created Pods will see the same share.
 ```
 kubectl apply -f 01-myappspa-deploy.yaml -n myapp
 ```
@@ -45,7 +45,7 @@ kubectl apply -f 01-myappspa-deploy.yaml -n myapp
 Wait until Deployment object upgrades our environment. Close existing application window and open our app again. You should see image change from Microsoft logo to Azure logo we have mapped to application via share.
 
 # Use ConfigMap to tweek nginx configuration
-Currently for our probes we are accessing root of SPA application which is too big taking away network and storage IO. We might one some more lightweight probe to check health status. Also we want to standardize on single url for all apps (/health) and do not want to implement changes in code itself. NGINX allows for configuring such health paths itself.
+Currently for our probes we are accessing root of SPA application which is too big taking away network and storage IO. We might prefer some more lightweight probe to check health status. Also we want to standardize on single url for all apps (/health) and do not want to implement changes in code itself. NGINX allows for configuring such health paths itself.
 
 We want to change NGINX configuration without rebuilding container image. There might more configuration options that we want to tweek during deployment perhaps providing different settings for dev, test and production environment. General rule is not to change container image between environments!
 
@@ -129,10 +129,10 @@ az storage file list -s exports -o table \
 
 
 # Enhance Ingress
-Ingress object allows for basic configuration such as routing rules, but NGINX implementation support way more features beyond what is available in Ingress specification. Enhanced options can be configured using annotations.
+Ingress object allows for basic configuration such as routing rules, but NGINX implementation supports way more features beyond what is available in Ingress specification. Enhanced options can be configured using annotations.
 
 ## Enable cookie-based sticky sessions
-At this point our front end is load balanced with no session persistence. That is OK for our application, but suppose we work with different one, that is not fully stateless and therefore need to ensure client session always go to same instance. 
+At this point our frontend is load balanced with no session persistence. That is OK for our application, but suppose we work with different one, that is not fully stateless (eg. when migrating older web apps to containers) and therefore need to ensure client session always goes to the same instance. 
 
 First check you are getting responses from multiple replicas.
 ```
@@ -151,7 +151,7 @@ curl -c mycookie http://${INGRESS_IP}.xip.io/info.txt
 curl -b mycookie http://${INGRESS_IP}.xip.io/info.txt   # Repeat multiple times
 ```
 
-There are way more configurations options beyond scope of this workshops. To name a few:
+There are way more configurations options beyond scope of this workshop. To name a few:
 * TLS encryption using certificate stored as Kubernetes secret
 * Automation of certificate enrollment (eg. with Let's encrypt) using cert-manager project
 * Rate limit on requests per minute
