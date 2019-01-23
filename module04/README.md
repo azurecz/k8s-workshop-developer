@@ -156,7 +156,7 @@ There are way more configurations options beyond scope of this workshops. To nam
 * Automation of certificate enrollment (eg. with Let's encrypt) using cert-manager project
 * Rate limit on requests per minute
 * Source IP filtering
-* Basic authnentication
+* Basic authentication
 * OAuth2
 * Canary including complex ones such as by header or cookie
 * Cors
