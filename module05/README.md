@@ -211,3 +211,45 @@ POSTGRESQL_URL="jdbc:postgresql://${POSTGRESQL_NAME}.postgres.database.azure.com
 ```
 
 ## CI/CD in Azure DevOps
+### Prerequisities
+You have to have microsoft account or MSDN license
+
+Open browser on https://dev.azure.com
+
+### Create a project
+### Create service connection for ACR and AKS
+### Create variable group (Library)
+### Create a build pipeline
+```yaml
+trigger:
+- master
+
+#runinng on MS hosted images
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+variables:
+- group: BaseVariables
+
+steps:
+
+- task: Docker@1
+  displayName: Login
+  inputs:
+    azureSubscriptionEndpoint: 'AzureContainerRegServiceconnection'
+    azureContainerRegistry: $(acr)
+    command: login
+
+- bash: |
+   # myapptodo
+   cd module01/src/myapptodo
+   docker build -t $(acr)/myapptodo . # should be tagged $(Build.BuildId) or ReleaseId
+   docker push $(acr)/myapptodo 
+   # myappspa
+   cd module01/src/myappspa
+   docker build -t $(acr)/myappspa . # $(Build.BuildId)
+   docker push $(acr)/myappspa
+  displayName: 'Build, tag and push image'
+```
+
+### Create a release pipeline

@@ -25,6 +25,8 @@ cd java-k8s-workshop
 
 We will use Azure container registry for our images, lets deploy ACR and push images there ..
 
+Please use especially for ACR_NAME **your unique name** - it is unique in whole Azure environment.
+
 ```bash
 # variables
 export RESOURCE_GROUP=JTEST
