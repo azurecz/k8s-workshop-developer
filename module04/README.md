@@ -151,12 +151,17 @@ curl -c mycookie http://${INGRESS_IP}.xip.io/info.txt
 curl -b mycookie http://${INGRESS_IP}.xip.io/info.txt   # Repeat multiple times
 ```
 
-## Enable rate limit
-## Enable HTTPS
-## Autoenroll Let's encrypt certificate (optional)
-## Enable authentication on Ingress (optional)
-
-
-# Use sidecar container to modify log messages
-
+There are way more configurations options beyond scope of this workshops. To name a few:
+* TLS encryption using certificate stored as Kubernetes secret
+* Automation of certificate enrollment (eg. with Let's encrypt) using cert-manager project
+* Rate limit on requests per minute
+* Source IP filtering
+* Basic authnentication
+* OAuth2
+* Canary including complex ones such as by header or cookie
+* Cors
+* Redirect
+* Proxy features such as url rewrite
+* Buffering
+* Lua rules
 
