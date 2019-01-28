@@ -217,10 +217,15 @@ You have to have microsoft account or MSDN license
 Open browser on https://dev.azure.com
 
 ### Create a project
+### Import a repo from github for simplicity we use only master branch
 ### Create service connection for ACR and AKS
-### Create variable group (Library)
+### Create variable group (Library) and needed variables
+### You have to link variables to concrete pipeline --> edit --> variables --> variable groups
 ### Create a build pipeline
 ```yaml
+trigger:
+- master
+
 trigger:
 - master
 
@@ -228,6 +233,8 @@ trigger:
 pool:
   vmImage: 'Ubuntu-16.04'
 
+# available variables from Global
+# KeyVault secrets must be linked
 variables:
 - group: BaseVariables
 
@@ -241,6 +248,7 @@ steps:
     command: login
 
 - bash: |
+   echo $(acr)
    # myapptodo
    cd module01/src/myapptodo
    docker build -t $(acr)/myapptodo . # should be tagged $(Build.BuildId) or ReleaseId
@@ -253,3 +261,34 @@ steps:
 ```
 
 ### Create a release pipeline
+
+
+
+### For enthusiasts
+# alternative sample (not tested)
+
+# - task: Docker@1
+#   displayName: Build image
+#   inputs:
+#     command: build
+#     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+#     azureContainerRegistry: $(azureContainerRegistry)
+#     dockerFile: Dockerfile
+#     imageName: $(Build.Repository.Name)
+
+# - task: Docker@1
+#   displayName: Tag image
+#   inputs:
+#     command: tag
+#     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+#     azureContainerRegistry: $(azureContainerRegistry)
+#     imageName: $(azureContainerRegistry)/$(Build.Repository.Name):latest
+#     arguments: $(azureContainerRegistry)/$(Build.Repository.Name):$(Build.BuildId)
+
+# - task: Docker@1
+#   displayName: Push image
+#   inputs:
+#     command: push
+#     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+#     azureContainerRegistry: $(azureContainerRegistry)
+#     imageName: $(Build.Repository.Name):$(Build.BuildId)
