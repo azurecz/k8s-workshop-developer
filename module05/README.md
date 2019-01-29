@@ -226,9 +226,6 @@ Open browser on https://dev.azure.com
 trigger:
 - master
 
-trigger:
-- master
-
 #runinng on MS hosted images
 pool:
   vmImage: 'Ubuntu-16.04'
@@ -266,29 +263,30 @@ steps:
 
 ### For enthusiasts
 ### alternative sample (not tested)
+```yaml
+ - task: Docker@1
+   displayName: Build image
+   inputs:
+     command: build
+     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+     azureContainerRegistry: $(azureContainerRegistry)
+     dockerFile: Dockerfile
+     imageName: $(Build.Repository.Name)
 
-### - task: Docker@1
-###   displayName: Build image
-###   inputs:
-###     command: build
-###     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-###     azureContainerRegistry: $(azureContainerRegistry)
-###     dockerFile: Dockerfile
-###     imageName: $(Build.Repository.Name)
+ - task: Docker@1
+   displayName: Tag image
+   inputs:
+     command: tag
+     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+     azureContainerRegistry: $(azureContainerRegistry)
+     imageName: $(azureContainerRegistry)/$(Build.Repository.Name):latest
+     arguments: $(azureContainerRegistry)/$(Build.Repository.Name):$(Build.BuildId)
 
-### - task: Docker@1
-###   displayName: Tag image
-###   inputs:
-###     command: tag
-###     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-###     azureContainerRegistry: $(azureContainerRegistry)
-###     imageName: $(azureContainerRegistry)/$(Build.Repository.Name):latest
-###     arguments: $(azureContainerRegistry)/$(Build.Repository.Name):$(Build.BuildId)
-
-### - task: Docker@1
-###   displayName: Push image
-###   inputs:
-###     command: push
-###     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-###     azureContainerRegistry: $(azureContainerRegistry)
-###     imageName: $(Build.Repository.Name):$(Build.BuildId)
+ - task: Docker@1
+   displayName: Push image
+   inputs:
+     command: push
+     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+     azureContainerRegistry: $(azureContainerRegistry)
+     imageName: $(Build.Repository.Name):$(Build.BuildId)
+```
