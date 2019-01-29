@@ -265,30 +265,30 @@ steps:
 
 
 ### For enthusiasts
-# alternative sample (not tested)
+### alternative sample (not tested)
 
-# - task: Docker@1
-#   displayName: Build image
-#   inputs:
-#     command: build
-#     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-#     azureContainerRegistry: $(azureContainerRegistry)
-#     dockerFile: Dockerfile
-#     imageName: $(Build.Repository.Name)
+### - task: Docker@1
+###   displayName: Build image
+###   inputs:
+###     command: build
+###     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+###     azureContainerRegistry: $(azureContainerRegistry)
+###     dockerFile: Dockerfile
+###     imageName: $(Build.Repository.Name)
 
-# - task: Docker@1
-#   displayName: Tag image
-#   inputs:
-#     command: tag
-#     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-#     azureContainerRegistry: $(azureContainerRegistry)
-#     imageName: $(azureContainerRegistry)/$(Build.Repository.Name):latest
-#     arguments: $(azureContainerRegistry)/$(Build.Repository.Name):$(Build.BuildId)
+### - task: Docker@1
+###   displayName: Tag image
+###   inputs:
+###     command: tag
+###     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+###     azureContainerRegistry: $(azureContainerRegistry)
+###     imageName: $(azureContainerRegistry)/$(Build.Repository.Name):latest
+###     arguments: $(azureContainerRegistry)/$(Build.Repository.Name):$(Build.BuildId)
 
-# - task: Docker@1
-#   displayName: Push image
-#   inputs:
-#     command: push
-#     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-#     azureContainerRegistry: $(azureContainerRegistry)
-#     imageName: $(Build.Repository.Name):$(Build.BuildId)
+### - task: Docker@1
+###   displayName: Push image
+###   inputs:
+###     command: push
+###     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+###     azureContainerRegistry: $(azureContainerRegistry)
+###     imageName: $(Build.Repository.Name):$(Build.BuildId)
