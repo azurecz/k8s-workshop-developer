@@ -216,12 +216,15 @@ You have to have microsoft account or MSDN license
 
 Open browser on https://dev.azure.com
 
-### Create a project
-### Import a repo from github for simplicity we use only master branch
-### Create service connection for ACR and AKS
-### Create variable group (Library) and needed variables
-### You have to link variables to concrete pipeline --> edit --> variables --> variable groups
-### Create a build pipeline
+```text
+   1. Create a project
+   2 Import a repo from github for simplicity we use only master branch
+   3 Create service connection for ACR and AKS
+   4 Create variable group (Library) and needed variables
+   5 You have to link variables to concrete pipeline --> edit --> variables --> variable groups
+   6 Create a build pipeline
+```
+
 ```yaml
 trigger:
 - master
@@ -237,29 +240,44 @@ variables:
 
 steps:
 
-- task: Docker@1
-  displayName: Login
-  inputs:
-    azureSubscriptionEndpoint: 'AzureContainerRegServiceconnection'
-    azureContainerRegistry: $(acr)
-    command: login
-
 - bash: |
-   echo $(acr)
+   echo $(acr-name-demo)
    # myapptodo
    cd module01/src/myapptodo
-   docker build -t $(acr)/myapptodo . # should be tagged $(Build.BuildId) or ReleaseId
-   docker push $(acr)/myapptodo 
+   docker build -t $(acr-name-demo)/myapptodo:latest . # should be tagged $(Build.BuildId) or ReleaseId
+   docker login -u tomasacrdemo001 -p $(acr-psw) $(acr-name-demo)
+   docker push $(acr-name-demo)/myapptodo:latest 
    # myappspa
    cd module01/src/myappspa
-   docker build -t $(acr)/myappspa . # $(Build.BuildId)
-   docker push $(acr)/myappspa
+   docker build -t $(acr-name-demo)/myappspa:latest . # $(Build.BuildId)
+   docker push $(acr-name-demo)/myappspa:latest
   displayName: 'Build, tag and push image'
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/module05/helm'
+    #contents: '**' 
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
+    #cleanTargetFolder: false # Optional
+    overWrite: true
+    #flattenFolders: false # Optional
+
+- task: PublishBuildArtifacts@1
+  inputs:
+     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+     artifactName: 'drop' 
+
 ```
 
 ### Create a release pipeline
 
-
+```text
+   1 Create a stage (currently only Deploy)
+   2 Choose Deploy app to AKS via its Helm chart
+   3 Install helm (2.12.2)
+   4 helm init with arg --service-account tiller --upgrade
+   5 helm deploy (set chart path and --install param)
+```
 
 ### For enthusiasts
 ### alternative sample (not tested)
