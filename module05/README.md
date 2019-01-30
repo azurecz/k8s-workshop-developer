@@ -245,7 +245,7 @@ steps:
    # myapptodo
    cd module01/src/myapptodo
    docker build -t $(acr-name-demo)/myapptodo:latest . # should be tagged $(Build.BuildId) or ReleaseId
-   docker login -u tomasacrdemo001 -p $(acr-psw) $(acr-name-demo)
+   docker login -u $(acr-name-demo-user) -p $(acr-psw) $(acr-name-demo)
    docker push $(acr-name-demo)/myapptodo:latest 
    # myappspa
    cd module01/src/myappspa
