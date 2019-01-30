@@ -15,7 +15,7 @@ mkdir myexperiment
 cd myexperiment
 
 # clone repo first
-git clone git@github.com:azurecz/java-k8s-workshop.git
+git clone https://github.com/azurecz/java-k8s-workshop.git
 
 # and now lets step into folder with project files.
 cd java-k8s-workshop
