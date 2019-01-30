@@ -15,4 +15,4 @@ sed -i -e "s/#INSTANCEVERSION#/$(cat /version)/" /opt/bitnami/nginx/html/js/app.
 echo "$(cat /etc/hostname) - $(cat /version)" > /opt/bitnami/nginx/html/info.txt
 
 /bin/bash /setup.sh
-/bin/bash /run.sh
+exec /bin/bash /run.sh
