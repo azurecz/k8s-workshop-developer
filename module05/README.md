@@ -37,7 +37,7 @@ helm update
 helm search ${ACR_NAME}
 
 # Get ingress public IP
-export INGRESS_IP=$(kubectl get svc default-ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
+export INGRESS_IP=$(kubectl get svc ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
 echo "You will be able to access application on this URL: http://${INGRESS_IP}.xip.io"
 
 # deploy from ACR helm repository
@@ -100,7 +100,7 @@ In bash change your working directory now to `java-k8s-workshop-flux`.
 sed -i 's/YOURACRNAME/'$ACR_NAME'/g' workloads/*.yaml
 
 # Change yaml files to your ingress public IP
-export INGRESS_IP=$(kubectl get svc default-ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
+export INGRESS_IP=$(kubectl get svc ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
 echo "You will be able to access application on this URL: http://${INGRESS_IP}.xip.io"
 
 # Change YAML files for ingress
@@ -167,7 +167,7 @@ kubectl create secret generic myapptodo-secret \
 Now you can access application on this URL:
 ```bash
 # Get ingress Public IP
-export INGRESS_IP=$(kubectl get svc default-ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
+export INGRESS_IP=$(kubectl get svc ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
 echo "You will be able to access application on this URL: http://${INGRESS_IP}.xip.io"
 ```
 
@@ -196,7 +196,7 @@ Build pipeline is in Jenkinsfile which is part of source code tree in github. Bu
 cd module05
 
 # Get ingress Public IP
-export INGRESS_IP=$(kubectl get svc default-ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
+export INGRESS_IP=$(kubectl get svc ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
 
 # postgres URL
 POSTGRESQL_URL="jdbc:postgresql://${POSTGRESQL_NAME}.postgres.database.azure.com:5432/todo?user=${POSTGRESQL_USER}@${POSTGRESQL_NAME}&password=${POSTGRESQL_PASSWORD}&ssl=true"
