@@ -4,7 +4,7 @@ apphost: xx.xx.xx
 appspa:
   replicaCount: 2
   image:
-    repository: acr/myappspa
+    repository: acr/myimg
     tag: stable
     pullPolicy: IfNotPresent
   service:
@@ -30,7 +30,7 @@ appspa:
 apptodo:
   replicaCount: 1
   image:
-    repository: acr/myapptodo
+    repository: acr/myimg
     tag: stable
     pullPolicy: IfNotPresent
   service:
