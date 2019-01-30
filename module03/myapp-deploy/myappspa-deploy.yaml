@@ -15,7 +15,7 @@ spec:
         runAsNonRoot: true     # Make sure container images do not use root
       containers:
       - name: myappspa
-        image: tomasacrdemo001.azurecr.io/myappspa:v2   # Best practice - always define specific tag, do not rely on latest
+        image: YOURACRNAME.azurecr.io/myappspa:v2   # Best practice - always define specific tag, do not rely on latest
         imagePullPolicy: Always    # Best practice for security - user will no access to image might get it from local cache
         env:
         - name: NGINX_HTTP_PORT_NUMBER
