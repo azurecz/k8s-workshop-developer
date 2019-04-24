@@ -1,13 +1,13 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: myappspa
+  name: myappspa-v2
 spec:
-  replicas: 3
+  replicas: 2
   template:
     metadata:
       labels:
-        app: myapp   # This label identifies our application, used for filtering output
+        app: myapp-v2   # This label identifies our application, used for filtering output
         component: spa    # This label identifies component, used for Service definition
         type: release    # This label identifies actual release vs. canary etc.
     spec:
@@ -15,7 +15,7 @@ spec:
         runAsNonRoot: true     # Make sure container images do not use root
       containers:
       - name: myappspa
-        image: YOURACRNAME.azurecr.io/myappspa:v1   # Best practice - always define specific tag, do not rely on latest
+        image: YOURACRNAME.azurecr.io/myappspa:v2   # Best practice - always define specific tag, do not rely on latest
         imagePullPolicy: Always    # Best practice for security - user will no access to image might get it from local cache
         env:
         - name: NGINX_HTTP_PORT_NUMBER

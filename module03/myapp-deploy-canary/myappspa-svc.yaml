@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: myappspa-v2
+  name: myappspa-v2
+spec:
+  selector:
+    app: myapp-v2
+    component: spa
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+    name: http

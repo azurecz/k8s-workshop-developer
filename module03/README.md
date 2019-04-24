@@ -65,3 +65,34 @@ kubectl create secret generic myapptodo-secret \
 # create deployment
 kubectl apply -f myapp-deploy --namespace myapp
 ```
+
+### Deploy canary (v2 of SPA application)
+
+Now we will create canary deployment with version v2 and we will balance there 10% of traffic.
+
+```bash
+# Change yaml files to your ACR name
+sed -i 's/YOURACRNAME/'$ACR_NAME'/g' myapp-deploy-canary/*.yaml
+
+# Get ingress public IP
+export INGRESS_IP=$(kubectl get service ingress-nginx-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+echo "You will be able to access application on this URL: http://${INGRESS_IP}.xip.io"
+
+# Change YAML files for ingress
+sed -i 's/YOURINGRESSIP/'$INGRESS_IP'/g' myapp-deploy-canary/*.yaml
+```
+
+```bash
+# create deployment
+kubectl apply -f myapp-deploy-canary --namespace myapp
+```
+
+Is traffic really balanced to app versions? Let's find out.
+```
+while true; do curl http://${INGRESS_IP}.xip.io/info.txt; done
+```
+
+Enforce traffic routing only to canary based on HEADER values in requests.
+```
+while true; do curl -H "myappspa-canary-v2: always" http://${INGRESS_IP}.xip.io/info.txt; done
+```
