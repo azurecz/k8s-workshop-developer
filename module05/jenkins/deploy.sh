@@ -146,7 +146,7 @@ function run_cli_command {
 
 echo "  .. helming jenkins"
 ### install jenkins to kubernetes cluster
-retry_until_successful helm install --name ${JENKINSSERVICENAME} stable/jenkins --set "Master.AdminPassword=${JENKINSPASSWORD}" >/dev/null
+retry_until_successful helm install --name ${JENKINSSERVICENAME} stable/jenkins --set "master.adminPassword=${JENKINSPASSWORD}" >/dev/null
 
 echo "  .. installing jenkins"
 
@@ -164,7 +164,7 @@ while [  -z "$KUBE_JENKINS" ]; do
 	if [ -n "${KUBE_JENKINS}" ]; then
 	    helm del --purge ${JENKINSSERVICENAME}
 	    sleep 10
-            helm install --name ${JENKINSSERVICENAME} stable/jenkins --set "Master.AdminPassword=${JENKINSPASSWORD}" 
+            helm install --name ${JENKINSSERVICENAME} stable/jenkins --set "master.adminPassword=${JENKINSPASSWORD}" 
 	fi
     	KUBE_JENKINS=""
     fi
