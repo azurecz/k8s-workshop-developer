@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: hostname
-          image: valdaakssec001.azurecr.io/webstress:v1
+          image: YOURACRNAME/webstress:v1
           env:
           - name: CYCLECOUNT
             value: "500"
