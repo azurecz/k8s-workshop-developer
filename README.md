@@ -1,12 +1,10 @@
-# java-k8s-workshop
-This repo contains materials for one-day Java apps on Azure Kubernetes Service training scheduled for 30th of January 2019.
-
-**WORK IN PROGRESS**
+# k8s-workshop
+This repo contains materials for one-day App Dev on Azure Kubernetes Service training.
 
 # Lab preparation
 
 We will use shell.azure.com cloud shell (bash) for experiments.
-Before you will start please create FORK of our repo `git@github.com:azurecz/java-k8s-workshop.git`
+Before you will start please create FORK of our repo `git@github.com:azurecz/k8s-workshop-developer.git`
 
 ## Clone repo
 
@@ -15,10 +13,10 @@ mkdir myexperiment
 cd myexperiment
 
 # clone repo first
-git clone https://github.com/azurecz/java-k8s-workshop.git
+git clone https://github.com/azurecz/k8s-workshop-developer.git
 
 # and now lets step into folder with project files.
-cd java-k8s-workshop
+cd k8s-workshop-developer
 ```
 
 ## Create Azure Container Registry
@@ -54,7 +52,7 @@ echo $ACR_KEY
 ```bash
 # aks - create cluster
 az aks create --resource-group ${RESOURCE_GROUP} --name ${AKS_CLUSTER_NAME} \
-  --no-ssh-key --kubernetes-version 1.12.6 \
+  --no-ssh-key --kubernetes-version 1.13.5 \
   --node-count 3 --node-vm-size Standard_DS1_v2 \
   --location ${LOCATION}
 # kube config
@@ -80,11 +78,11 @@ az role assignment create --assignee $CLIENT_ID --role Reader --scope $ACR_ID
 
 # Labs
 
-## [01 - Building Java application containers](module01/README.md)
+## [01 - Building application containers](module01/README.md)
 
 ## [02 - Introduction to Azure Kubernetes Service](module02/README.md)
 
-## [03 - Deploy Java application to Azure Kubernetes Service](module03/README.md)
+## [03 - Deploy application to Azure Kubernetes Service](module03/README.md)
 
 ## [04 - Optimizing deployment in Kubernetes](module04/README.md)
 

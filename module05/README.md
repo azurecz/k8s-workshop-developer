@@ -49,7 +49,7 @@ helm delete --purge myrelease
 kubectl delete namespace myapp
 ```
 
-## CI/CD based on GitHub + Azure Container Registry build + Flux delivery to kubernetes
+## CI/CD based on GitHub + Azure Container Registry build
 
 This CI/CD demo contains CI simple pipeline in Azure Container Registry and CD pipeline in FLUX (git based delivery system - https://github.com/weaveworks/flux ).
 
@@ -61,7 +61,7 @@ There we will define two build tasks - for building SPA web GUI and TODO microse
 # set default ACR name
 az configure --defaults acr=${ACR_NAME}
 # build manualy / last parameter of command is your forked github repo
-az acr run -f module05/acr-flux/myapp-ci.yaml https://github.com/valda-z/java-k8s-workshop.git
+az acr run -f module05/acr/myapp-ci.yaml https://github.com/valda-z/k8s-workshop-developer.git
 ```
 
 Now let's prepare task triggered by github commit. We will need access token for this task, there is description: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/ .
@@ -69,7 +69,7 @@ Now let's prepare task triggered by github commit. We will need access token for
 ```bash
 # now prepare task triggered by github commit
 az acr task create -n myapp -f module05/acr-flux/myapp-ci.yaml \
-  -c https://github.com/valda-z/java-k8s-workshop.git \
+  -c https://github.com/valda-z/k8s-workshop-developer.git \
   --pull-request-trigger-enabled true \
   --git-access-token 0000000000000000000000000000000000000000
 
@@ -81,102 +81,6 @@ az acr task list-runs -o table
 ```
 
 Now we can create small commit in our repo and check via `az acr task list-runs -o table` if build was triggered and status of build.
-
-### Handle CI (ACR build) to FLUX CD
-
-There is space for some homework and creative solution. You can use Azure LogicApp or any other technique to handle webhooks from ACR to trigger CD tasks (by commit changes to github repo with flux configuration).
-
-### CD by FLUX
-
-#### Prepare configuration github repo
-
-Fork our base FLUX repo: https://github.com/azurecz/java-k8s-workshop-flux and setup configuration files in repo.
-Yaml files for deployment are stored in folder `wokloads`.
-
-In bash change your working directory now to `java-k8s-workshop-flux`.
-
-```bash
-# Change yaml files to your ACR name
-sed -i 's/YOURACRNAME/'$ACR_NAME'/g' workloads/*.yaml
-
-# Change yaml files to your ingress public IP
-export INGRESS_IP=$(kubectl get svc ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
-echo "You will be able to access application on this URL: http://${INGRESS_IP}.xip.io"
-
-# Change YAML files for ingress
-sed -i 's/YOURINGRESSIP/'$INGRESS_IP'/g' workloads/*.yaml
-
-# and finally you have to commit changes
-git add *
-git commit -m "configuration changed"
-git push
-```
-
-#### Install flux
-
-Now let's install flux to AKS cluster.
-https://github.com/weaveworks/flux/blob/master/site/helm-get-started.md#install-weave-flux
-
-```bash
-# add flux repo
-helm repo add weaveworks https://weaveworks.github.io/flux
-# apply CRD
-kubectl apply -f https://raw.githubusercontent.com/weaveworks/flux/master/deploy-helm/flux-helm-release-crd.yaml
-
-# install and configure FLUX
-helm upgrade -i flux \
---set helmOperator.create=true \
---set helmOperator.createCRD=false \
---set git.url=git@github.com:valda-z/java-k8s-workshop-flux.git \
---namespace flux \
-weaveworks/flux
-```
-
-#### Setup github write access for flux
-
-See description there:
-https://github.com/weaveworks/flux/blob/master/site/helm-get-started.md#giving-write-access
-
-
-```bash
-# get flux public key
-fluxctl identity --k8s-fwd-ns flux
-```
-
-In order to sync your cluster state with git you need to copy the public key and create a deploy key with write access on your GitHub repository.
-
-Open GitHub, navigate to your fork, go to **Setting > Deploy keys**, click on **Add deploy key**, give it a name, check **Allow write access**, paste the Flux public key and click **Add key**.
-
-Once Flux has confirmed access to the repository, it will start deploying the workloads of **java-k8s-workshop-flux**.
-
-```bash
-# check pods
-kubectl get pods --all-namespaces
-```
-
-Now we can see that myapptodo POD is failing because we have no secrets with connection string to DB.
-
-```bash
-# create secret for myapptodo
-POSTGRESQL_URL="jdbc:postgresql://${POSTGRESQL_NAME}.postgres.database.azure.com:5432/todo?user=${POSTGRESQL_USER}@${POSTGRESQL_NAME}&password=${POSTGRESQL_PASSWORD}&ssl=true"
-kubectl create secret generic myapptodo-secret \
-  --from-literal=postgresqlurl="$POSTGRESQL_URL" \
-  --namespace myapp
-```
-
-Now you can access application on this URL:
-```bash
-# Get ingress Public IP
-export INGRESS_IP=$(kubectl get svc ingress-nginx-ingress-controller -o=custom-columns=EXTERNAL-IP:.status.loadBalancer.ingress[*].ip | grep -v "EXTERNAL-IP")
-echo "You will be able to access application on this URL: http://${INGRESS_IP}.xip.io"
-```
-
-Finally you can change some configuration in flux configuration github repo and observe how flux will deploy changes.
-
-```bash
-# check flux logs
-kubectl -n flux logs deployment/flux -f
-```
 
 ## CI/CD in Jenkins (AKS + ACR)
 
@@ -192,7 +96,7 @@ Build pipeline is in Jenkinsfile which is part of source code tree in github. Bu
 * deploy new version via helm to AKS cluster
 
 ```bash
-# install jenkins (from repository java-k8s-workshop, directory module05)
+# install jenkins (from repository k8s-workshop-developer, directory module05)
 cd module05
 
 # Get ingress Public IP
@@ -207,7 +111,7 @@ POSTGRESQL_URL="jdbc:postgresql://${POSTGRESQL_NAME}.postgres.database.azure.com
   --postgresjdbcurl "${POSTGRESQL_URL}" \
   --acrname "${ACR_NAME}" \
   --acrkey "${ACR_KEY}" \
-  --giturl "https://github.com/azurecz/java-k8s-workshop.git"
+  --giturl "https://github.com/azurecz/k8s-workshop-developer.git"
 ```
 
 ## CI/CD in Azure DevOps

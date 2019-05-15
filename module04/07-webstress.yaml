@@ -1,0 +1,50 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: webstress
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: webstress
+    spec:
+      containers:
+        - name: hostname
+          image: valdaakssec001.azurecr.io/webstress:v1
+          env:
+          - name: CYCLECOUNT
+            value: "500"
+          - name: COSMOSURI
+            valueFrom:
+              secretKeyRef:
+                name: cosmos-secret
+                key: cosmosuri
+          - name: COSMOSKEY
+            valueFrom:
+              secretKeyRef:
+                name: cosmos-secret
+                key: cosmoskey
+          resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: webstress
+  name: webstress
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 5001
+    name: http
+  selector:
+    app: webstress
+  type: LoadBalancer

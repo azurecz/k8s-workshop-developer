@@ -127,41 +127,50 @@ az storage file list -s exports -o table \
     --account-key $STORAGE_KEY
 ```
 
+# HPA - Horizontal Pod Autoscaler
 
-# Enhance Ingress
-Ingress object allows for basic configuration such as routing rules, but NGINX implementation supports way more features beyond what is available in Ingress specification. Enhanced options can be configured using annotations.
-
-## Enable cookie-based sticky sessions
-At this point our frontend is load balanced with no session persistence. That is OK for our application, but suppose we work with different one, that is not fully stateless (eg. when migrating older web apps to containers) and therefore need to ensure client session always goes to the same instance. 
-
-First check you are getting responses from multiple replicas.
+We will try to create horizontally auto-scaled solution for our .NetCore service.
 ```
-curl http://${INGRESS_IP}.xip.io/info.txt   # Repeat multiple times
+# create namespace for experiment with HPA
+kubectl create namespace perf
 ```
 
-Deploy modified Ingress object with annotation to enable session cookie-based persistence.
+Create secrets for service's connection string.
 ```
-kubectl apply -f 07-myappspa-ing.yaml -n myapp
-```
-
-Now we will capture cookie and use it with next request. Ensure you are always getting response from the same instance.
-
-```
-curl -c mycookie http://${INGRESS_IP}.xip.io/info.txt
-curl -b mycookie http://${INGRESS_IP}.xip.io/info.txt   # Repeat multiple times
+# create secrets
+kubectl create secret generic cosmos-secret \
+    --from-literal=cosmosuri=$COSMOSURI \
+    --from-literal=cosmoskey=$COSMOSKEY \
+    -n perf
 ```
 
-There are way more configurations options beyond scope of this workshop. To name a few:
-* TLS encryption using certificate stored as Kubernetes secret
-* Automation of certificate enrollment (eg. with Let's encrypt) using cert-manager project
-* Rate limit on requests per minute
-* Source IP filtering
-* Basic authentication
-* OAuth2
-* Canary including complex ones such as by header or cookie
-* Cors
-* Redirect
-* Proxy features such as url rewrite
-* Buffering
-* Lua rules
+Apply deployment of our webstress service
+```
+# deploy
+kubectl apply -f 07-webstress.yaml -n perf
 
+# get public IP of service for testing
+kubectl get svc -n perf
+
+# create HPA
+kubectl autoscale rs webstress --namespace perf --min=1 --max=8 --cpu-percent=50
+
+# monitor HPA
+kubectl get hpa --namespace perf -w
+```
+
+Send some "stress" traffic to service.
+```
+# you can run fet times this background task ...
+curl "[IP ADDRESS]/perf?x=[0-10000]" 2> /dev/null > /dev/null &
+
+# after test you can kill all curl processes
+pkill curl
+```
+
+# Cleanup
+
+```
+kubectl delete namespace myapp
+kubectl delete namespace perf
+```

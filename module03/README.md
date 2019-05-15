@@ -1,4 +1,4 @@
-# 03 - Deploy Java application to Azure Kubernetes Service
+# 03 - Deploy application to Azure Kubernetes Service
 
 ## Create PostgreSQL service
 
@@ -96,3 +96,19 @@ Enforce traffic routing only to canary based on HEADER values in requests.
 ```
 while true; do curl -H "myappspa-canary-v2: always" http://${INGRESS_IP}.xip.io/info.txt; done
 ```
+
+### Note
+
+There are way more configurations options beyond scope of this workshop. To name a few:
+* TLS encryption using certificate stored as Kubernetes secret
+* Automation of certificate enrollment (eg. with Let's encrypt) using cert-manager project
+* Rate limit on requests per minute
+* Source IP filtering
+* Basic authentication
+* OAuth2
+* Canary including complex ones such as by header or cookie
+* Cors
+* Redirect
+* Proxy features such as url rewrite
+* Buffering
+* Lua rules
