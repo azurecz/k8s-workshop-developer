@@ -127,11 +127,27 @@ namespace WebStress.Controllers
             }
         }
 
+        private ConnectionPolicy connPolicy
+        {
+            get
+            {
+                ConnectionPolicy ret = null;
+                string loc = Environment.GetEnvironmentVariable("COSMOSLOCATION");
+                if(loc!=null && loc!=string.Empty && loc.Length > 0)
+                {
+                    ret = new ConnectionPolicy();
+                    ret.EnableEndpointDiscovery = true;
+                    ret.PreferredLocations.Add(loc);
+                }
+                return ret;
+            }
+        }
+
         private static DocumentClient _cclient = null;
         private DocumentClient clientCosmos{
             get {
                 if(_cclient==null){
-                    _cclient = new DocumentClient(CosmosDBUri, CosmosDBKey);
+                    _cclient = new DocumentClient(CosmosDBUri, CosmosDBKey, connPolicy);
                     _cclient.OpenAsync().GetAwaiter();
                 }
                 return _cclient;
@@ -151,7 +167,7 @@ namespace WebStress.Controllers
 
         private async Task<string> cosmosWrite(string runtime)
         {
-            using (DocumentClient client = new DocumentClient(CosmosDBUri, CosmosDBKey))
+            using (DocumentClient client = new DocumentClient(CosmosDBUri, CosmosDBKey, connPolicy))
             {
                 await client.OpenAsync();
                 Uri collectionLink = UriFactory.CreateDocumentCollectionUri("TestDB", "TestCollection");
@@ -166,7 +182,7 @@ namespace WebStress.Controllers
 
         private async Task<bool> cosmosRead(string id)
         {
-            using (DocumentClient client = new DocumentClient(CosmosDBUri, CosmosDBKey))
+            using (DocumentClient client = new DocumentClient(CosmosDBUri, CosmosDBKey, connPolicy))
             {
                 await client.OpenAsync();
                 Uri collectionLink = UriFactory.CreateDocumentCollectionUri("TestDB", "TestCollection");
