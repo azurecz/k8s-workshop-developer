@@ -1,8 +1,9 @@
 # Prepare deployment files
+```
 cd ../module04
 sed -i 's/YOURACRNAME/'$ACR_NAME'/g' *.yaml
 sed -i 's/YOURINGRESSIP/'$INGRESS_IP'/g' *.yaml
-
+```
 
 # Use Volume to map persistent static content shared across SPA Pods
 Up to this point Microsoft logo in our frontend app has been packaged with container. For situations with much more static content or need for some content management on top of running instances we might leverage shared Volume. This might be more efficient from storage and speed of deployment perspective and content such as images or documents can be managed outside of CI/CD pipelines such as with Content Management System.
