@@ -23,14 +23,12 @@ cd k8s-workshop-developer
 
 We will use Azure container registry for our images, lets deploy ACR and push images there ..
 
-Please use especially for ACR_NAME **your unique name** - it is unique in whole Azure environment.
+Please use especially for ACR_NAME **your unique name** - it is unique in whole Azure environment in 'rc' file which contains all variable definition for our experiment. If you will run `. rc` first time it can produce few errors because not all resources exist yet.
+
 
 ```bash
 # variables
-export RESOURCE_GROUP=JTEST
-export LOCATION="northeurope"
-export ACR_NAME=valdaakssec001
-export AKS_CLUSTER_NAME=myaks
+. rc
 
 # create resource group
 az group create --location ${LOCATION} --name ${RESOURCE_GROUP}

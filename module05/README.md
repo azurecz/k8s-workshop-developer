@@ -12,6 +12,9 @@ Helm is template engine (deployment engine) for kubernetes.
 Please change IP address of your ingress controller and name of your Azure Container Registry in `helm upgrade` command below.
 
 ```bash
+# variables
+. ../rc
+
 # create namespace
 kubectl create namespace myapp
 

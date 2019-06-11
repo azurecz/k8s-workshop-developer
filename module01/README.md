@@ -8,6 +8,9 @@ For your development you can use docker-compose configuration which is ready the
 # enter directory with source codes
 cd module01
 
+# variables 
+. ../rc
+
 # build SPA application in ACR - build has to be done from folder with source codes: k8s-workshop-developer
 az acr build --registry $ACR_NAME --image myappspa:v1 ./src/myappspa
 
@@ -45,7 +48,6 @@ First step is create CosmosDB instance and there we will create database and col
 Please use your unique name for **COSMOSNAME**.
 
 ```bash
-export COSMOSNAME="valdaaksseccdb001"
 # Create cosmosDB
 az cosmosdb create --name ${COSMOSNAME} --resource-group ${RESOURCE_GROUP}
 

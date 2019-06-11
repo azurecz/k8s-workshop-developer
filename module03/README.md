@@ -1,11 +1,15 @@
 # 03 - Deploy application to Azure Kubernetes Service
 
+```bash
+# goto directory for this lab
+cd ../module03
+```
+
 ## Create PostgreSQL service
 
 ```bash
-export POSTGRESQL_NAME="valdaakspostgresql001"
-export POSTGRESQL_USER="myadmin"
-export POSTGRESQL_PASSWORD="VerySecurePassword123..."
+#variables
+. ../rc
 
 # create PostgreSQL server in Azure
 az postgres server create --resource-group ${RESOURCE_GROUP} \
@@ -30,11 +34,6 @@ az postgres server firewall-rule create \
 ```
 
 ## Deploy apps to AKS
-
-```bash
-# goto directory for this lab
-cd ../module03
-```
 
 Replace your image names (ACR name) in files `myapp-deploy/myappspa-rs.yaml` and `myapp-deploy/myapptodo-rs.yaml`.
 

@@ -1,5 +1,5 @@
 # Prepare deployment files
-```
+```bash
 cd ../module04
 sed -i 's/YOURACRNAME/'$ACR_NAME'/g' *.yaml
 sed -i 's/YOURINGRESSIP/'$INGRESS_IP'/g' *.yaml
@@ -9,9 +9,10 @@ sed -i 's/YOURINGRESSIP/'$INGRESS_IP'/g' *.yaml
 Up to this point Microsoft logo in our frontend app has been packaged with container. For situations with much more static content or need for some content management on top of running instances we might leverage shared Volume. This might be more efficient from storage and speed of deployment perspective and content such as images or documents can be managed outside of CI/CD pipelines such as with Content Management System.
 
 Create Azure Files storage in Azure, create share and upload new image.
-```
+```bash
+# variables
+
 # Create storage account
-export STORAGE_NAME=tomaskubestorage198
 az storage account create -n $STORAGE_NAME \
     -g $RESOURCE_GROUP \
     --sku Standard_LRS
@@ -31,7 +32,7 @@ az storage file upload -s images \
 ```
 
 Create secret with storage connection details
-```
+```bash
 kubectl create secret generic images-secret \
     --from-literal=azurestorageaccountname=$STORAGE_NAME \
     --from-literal=azurestorageaccountkey=$STORAGE_KEY \
@@ -39,7 +40,7 @@ kubectl create secret generic images-secret \
 ```
 
 Deploy modified myappspa deployment. We are using Volume implemented by our share and map it to container file system on path where images are. Note that Volume mapping takes precedent over existing files. All created Pods will see the same share.
-```
+```bash
 kubectl apply -f 01-myappspa-deploy.yaml -n myapp
 ```
 
@@ -52,24 +53,24 @@ We want to change NGINX configuration without rebuilding container image. There 
 
 We will solve this by using ConfigMap in Kubernetes. It can consist of key value pair that we can map into our Pod as environmental variables. In our case configuration is actualy more complex configuration file. This is also possible with ConfigMap. First let's use configuration file healthvhost.conf and package it as ConfigMap. 
 
-```
+```bash
 kubectl create configmap healthvhostconf --from-file=healthvhost.conf -n myapp
 kubectl describe configmap healthvhostconf -n myapp
 ```
 
 First we will use changed Deployment with ConfigMap mapped to file system to proper locaiton where nginx expects configuration file and check it works.
 
-```
+```bash
 kubectl apply -f 02-myappspa-deploy.yaml -n myapp
 ```
 
 Wait for Deployment to redeploy Pods and check our /health URL works.
-```
+```bash
 curl http://$INGRESS_IP.xip.io/health
 ```
 
 Looks good. We will now change our probes implementation to point to /health.
-```
+```bash
 kubectl apply -f 03-myappspa-deploy.yaml -n myapp
 ```
 
@@ -77,22 +78,22 @@ kubectl apply -f 03-myappspa-deploy.yaml -n myapp
 Suppose now we need to know inside of our Pod what Kubernetes namespace it has been created in. More over we want to write it into file that will be accessible via URL. We will use passing this information via Downward API and also use init container to prepare file before running our main container.
 
 We will add initContainer to our Pod definition. That container will be started before all other containers and Kubernetes will wait for it to finish first. This can used to preload cache or do any other preparations before you are ready to run your main container. We will also leverage Downward API to inject information about used image into Pod as environmental variable. For now init container will just print it on screen so we can capture it in logs.
-```
+```bash
 kubectl apply -f 04-myappspa-deploy.yaml -n myapp
 ```
 
 Checkout logs from our info container
-```
+```bash
 kubectl logs myappspa-7b74455b84-rf2c6 -n myapp -c info   # Change to your Pod name
 ```
 
 Should work. Now we want to put this information as file on our site so we need some way how init container can write to file system that main container can read from. We will use Volume for this, but this time it will not be implemented as outside resource, but rather is Volume valid only on Pod level mounted to both containers. Let's do it.
-```
+```bash
 kubectl apply -f 05-myappspa-deploy.yaml -n myapp
 ```
 
 Check it out
-```
+```bash
 curl http://$INGRESS_IP.xip.io/info/namespace.txt
 ```
 
@@ -100,14 +101,14 @@ curl http://$INGRESS_IP.xip.io/info/namespace.txt
 In this example we will investigate how to use Kubernetes to run scheduled batch jobs. This is very useful for certain computation scenarios such as rendering or machine learning, but also for periodical tasks. In our demo we will shedule periodic task to dump data from postgresql into csv file stored on share in Azure storage.
 
 We will reuse storage account we have created for images, but create new share in it.
-```
+```bash
 az storage share create -n exports \
     --account-name $STORAGE_NAME \
     --account-key $STORAGE_KEY
 ```
 
 Than we need to gather connection details you used for creating database in previous modules and store them in Kubernetes secret with naming convention used by psql command line utility.
-```
+```bash
 kubectl create secret generic psql -n myapp \
     --from-literal PGUSER=$POSTGRESQL_USER@$POSTGRESQL_NAME \
     --from-literal PGPASSWORD=$POSTGRESQL_PASSWORD \
@@ -116,13 +117,13 @@ kubectl create secret generic psql -n myapp \
 ```
 
 Schedule job to run every 2 minutes.
-```
+```bash
 kubectl apply -f 06-export.yaml -n myapp
 ```
 
 Job will run every 2 minutes. After while check files in your storage account.
 
-```
+```bash
 az storage file list -s exports -o table \
     --account-name $STORAGE_NAME \
     --account-key $STORAGE_KEY
@@ -131,13 +132,13 @@ az storage file list -s exports -o table \
 # HPA - Horizontal Pod Autoscaler
 
 We will try to create horizontally auto-scaled solution for our .NetCore service.
-```
+```bash
 # create namespace for experiment with HPA
 kubectl create namespace perf
 ```
 
 Create secrets for service's connection string.
-```
+```bash
 # create secrets
 kubectl create secret generic cosmos-secret \
     --from-literal=cosmosuri=$COSMOSURI \
@@ -146,7 +147,7 @@ kubectl create secret generic cosmos-secret \
 ```
 
 Apply deployment of our webstress service
-```
+```bash
 # deploy
 kubectl apply -f 07-webstress.yaml -n perf
 
@@ -161,7 +162,7 @@ kubectl get hpa --namespace perf -w
 ```
 
 Send some "stress" traffic to service.
-```
+```bash
 # you can run fet times this background task ...
 curl "[IP ADDRESS]/perf?x=[0-10000]" 2> /dev/null > /dev/null &
 
@@ -171,7 +172,7 @@ pkill curl
 
 # Cleanup
 
-```
+```bash
 kubectl delete namespace myapp
 kubectl delete namespace perf
 ```

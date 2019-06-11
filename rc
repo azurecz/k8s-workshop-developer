@@ -1,0 +1,25 @@
+# variables - please change for your unique names
+export RESOURCE_GROUP=AATEST
+export ACR_NAME=valdaazaca123
+export POSTGRESQL_NAME=valdaazaca123
+export STORAGE_NAME=valdaazaca123
+export COSMOSNAME=valdaazaca123
+
+# variables
+export LOCATION="northeurope"
+export AKS_CLUSTER_NAME=myaks
+export POSTGRESQL_USER="myadmin"
+export POSTGRESQL_PASSWORD="VerySecurePassword123..."
+
+export ACR_URL=$(az acr show --name $ACR_NAME --resource-group $RESOURCE_GROUP --query "loginServer" --output tsv)
+export ACR_KEY=$(az acr credential show --name $ACR_NAME --resource-group $RESOURCE_GROUP --query "passwords[0].value" --output tsv)
+export CLIENT_ID=$(az aks show --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME --query "servicePrincipalProfile.clientId" --output tsv)
+export ACR_ID=$(az acr show --name $ACR_NAME --resource-group $RESOURCE_GROUP --query "id" --output tsv)
+export POSTGRES_FQDN=$(az postgres server show --resource-group ${RESOURCE_GROUP} --name ${POSTGRESQL_NAME} --query "fullyQualifiedDomainName" --output tsv)
+export INGRESS_IP=$(kubectl get service ingress-nginx-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+export POSTGRESQL_URL="jdbc:postgresql://${POSTGRESQL_NAME}.postgres.database.azure.com:5432/todo?user=${POSTGRESQL_USER}@${POSTGRESQL_NAME}&password=${POSTGRESQL_PASSWORD}&ssl=true"
+export STORAGE_KEY=$(az storage account keys list -g $RESOURCE_GROUP -n $STORAGE_NAME --query [0].value -o tsv) 
+export COSMOSKEY="$(az cosmosdb list-keys --name ${COSMOSNAME} --resource-group ${RESOURCE_GROUP} --query "primaryMasterKey" -o tsv)"
+export COSMOSURI="$(az cosmosdb show --name ${COSMOSNAME} --resource-group ${RESOURCE_GROUP} --query "documentEndpoint" -o tsv)"
+
+
