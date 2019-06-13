@@ -1,9 +1,12 @@
 # variables - please change for your unique names
 export RESOURCE_GROUP=AATEST
-export ACR_NAME=valdaazaca123
-export POSTGRESQL_NAME=valdaazaca123
-export STORAGE_NAME=valdaazaca123
-export COSMOSNAME=valdaazaca123
+export MYUNIQUENAME=valdaazaca123
+
+# derived variables
+export ACR_NAME=${MYUNIQUENAME}acr
+export POSTGRESQL_NAME=${MYUNIQUENAME}psql
+export STORAGE_NAME=${MYUNIQUENAME}strg
+export COSMOSNAME=${MYUNIQUENAME}nsql
 
 # variables
 export LOCATION="northeurope"
