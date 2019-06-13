@@ -168,7 +168,7 @@ Note native Kubernetes tools will assign traffic based on number of Pods. Someti
 At this point let's delete our experiments. We will deploy complete application in next module.
 
 ```
-kubectl delete deployment myappspa,myappspa-canary
+kubectl delete deployment myappspa myappspa-canary
 kubectl delete service myappspa
 ```
 
