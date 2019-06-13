@@ -1,5 +1,10 @@
 # Jump to lab directory
+```bash
 cd module02
+
+# apply variables
+. ../rc
+```
 
 # Change yaml files to your ACR name
 ```
