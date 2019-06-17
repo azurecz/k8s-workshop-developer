@@ -198,7 +198,7 @@ Create account in Kubernetes for Helm, install server-side component and check i
 kubectl apply -f helm-account.yaml
 
 # initialize helm
-helm init --service-account tiller --upgrade
+helm init --service-account tiller --upgrade --wait
 
 # after while check if helm is installed in cluster
 helm version
