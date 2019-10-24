@@ -71,7 +71,7 @@ CLIENT_ID=$(az aks show --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAM
 ACR_ID=$(az acr show --name $ACR_NAME --resource-group $RESOURCE_GROUP --query "id" --output tsv)
 
 # Create role assignment
-az role assignment create --assignee $CLIENT_ID --role Reader --scope $ACR_ID
+az role assignment create --assignee $CLIENT_ID --role AcrPull --scope $ACR_ID
 ```
 
 # Labs
